@@ -10,16 +10,19 @@ package com.github.wdataw.louvain;
  */
 public class Node {
     //variables
-    private int nodeId;
     private String nodeName;
+    private final int nodeID;
+    private static int nextID = 0;
+    
 
     
     //constructors
 
-    //id and name
-    public Node(int nodeId, String nodeName) {
-        this.nodeId = nodeId;
+    
+    public Node(String nodeName) {
+        this.nodeID = nextID;
         this.nodeName = nodeName;
+        nextID++;
     }
     
     
@@ -27,12 +30,9 @@ public class Node {
     
     //getters and setters
     public int getNodeId() {
-        return nodeId;
+        return nodeID;
     }
 
-    public void setNodeId(int nodeId) {
-        this.nodeId = nodeId;
-    }
 
     public String getNodeName() {
         return nodeName;
@@ -41,6 +41,8 @@ public class Node {
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
+    
+
     
     
     
