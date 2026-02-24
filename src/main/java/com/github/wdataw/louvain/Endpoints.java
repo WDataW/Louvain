@@ -6,7 +6,7 @@ package com.github.wdataw.louvain;
 
 /**
  *
- * @author abdulwhid Ghalib
+ * @author abdul
  */
 public class Endpoints {
      private Node node1;
