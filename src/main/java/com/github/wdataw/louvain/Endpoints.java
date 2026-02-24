@@ -9,7 +9,7 @@ package com.github.wdataw.louvain;
  * @author abdul
  */
 public class Endpoints {
-     private Node node1;
+    private Node node1;
     private Node node2;
 
     // constructor
