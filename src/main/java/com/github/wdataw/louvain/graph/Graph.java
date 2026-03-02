@@ -15,7 +15,7 @@ public class Graph {
     private List<Edge> edges = new ArrayList<Edge>();
     private List<Node> nodes = new ArrayList<Node>();
     // an adjacency list structure to represent the graph
-    private Map<Node, List<Edge>> adjList = new HashMap<>();
+    private Map<Integer, List<Edge>> adjList = new HashMap<>();
 
     // constructor
     Graph(List<Edge> edges,List<Node> nodes){
@@ -35,7 +35,7 @@ public class Graph {
     public List<Node> getNodes() {
         return nodes;
     }
-    public Map<Node, List<Edge>> getAdjList() {
+    public Map<Integer, List<Edge>> getAdjList() {
         return adjList;
     }
 
@@ -48,18 +48,18 @@ public class Graph {
     }
 
     // expects a list on nodes and a list of edges to construct and return an adjacency list
-    private Map<Node, List<Edge>> toAdjList(List<Node> nodes, List<Edge> edges){
-        Map<Node, List<Edge>> adjList = new HashMap<>();
-        // create the keys (each node points to an empty list)
+    private Map<Integer, List<Edge>> toAdjList(List<Node> nodes, List<Edge> edges){
+        Map<Integer, List<Edge>> adjList = new HashMap<>();
+        // create the keys (each nodeID points to an empty list)
         for(Node n:nodes){
-        // node -> {}
-            adjList.put(n, new ArrayList<>());
+        // nodeID -> {}
+            adjList.put(n.getNodeId(), new ArrayList<>());
         }
         // add each edge to the lists of both its endpoints
         for(Edge e:edges){
-        // node -> {edge1,edge2, ...}
-          adjList.get(e.getEndpoints().getNode1()).add(e);
-          adjList.get(e.getEndpoints().getNode2()).add(e);
+        // nodeID -> {edge1,edge2, ...}
+          adjList.get(e.getEndpoints().getNode1().getNodeId()).add(e);
+          adjList.get(e.getEndpoints().getNode2().getNodeId()).add(e);
         }
         return adjList;
     }
