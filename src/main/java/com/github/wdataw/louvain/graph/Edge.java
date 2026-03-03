@@ -1,5 +1,11 @@
 package com.github.wdataw.louvain.graph;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
+
 public class Edge {
     // attributes
     private static int idCounter = 0;
@@ -8,12 +14,12 @@ public class Edge {
     private Endpoints endpoints;
 
     // constructors
-    public Edge(float edgeWeight, Endpoints endpoints) {
+    public Edge(Endpoints endpoints ,float edgeWeight) {
         this.edgeWeight = edgeWeight;
         this.endpoints = new Endpoints(endpoints.getNode1(), endpoints.getNode2());
         this.edgeID = ++idCounter;
     }
-    public Edge(float EdgeWeight, Node node1, Node node2) {
+    public Edge(Node node1, Node node2 ,float EdgeWeight) {
         this.edgeWeight = EdgeWeight;
         this.endpoints = new Endpoints(node1,node2);
         this.edgeID = ++idCounter;
@@ -40,5 +46,18 @@ public class Edge {
         return edgeWeight;
     }
     public Endpoints getEndpoints(){ return endpoints; }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Edge edge = (Edge) o;
+        return edgeID == edge.edgeID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(edgeID);
+    }
 }
 
