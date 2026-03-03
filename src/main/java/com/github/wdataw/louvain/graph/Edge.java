@@ -10,19 +10,19 @@ public class Edge {
     // attributes
     private static int idCounter = 0;
     private final int edgeID;
-    private float edgeWeight;
+    private double edgeWeight;
     private Endpoints endpoints;
 
     // constructors
     public Edge(Endpoints endpoints ,float edgeWeight) {
         this.edgeWeight = edgeWeight;
         this.endpoints = new Endpoints(endpoints.getNode1(), endpoints.getNode2());
-        this.edgeID = ++idCounter;
+        this.edgeID = idCounter++;
     }
     public Edge(Node node1, Node node2 ,float EdgeWeight) {
         this.edgeWeight = EdgeWeight;
         this.endpoints = new Endpoints(node1,node2);
-        this.edgeID = ++idCounter;
+        this.edgeID = idCounter++;
     }
 
     // setters
@@ -42,7 +42,7 @@ public class Edge {
     public int getEdgeID() {
         return edgeID;
     }
-    public float getEdgeWeight() {
+    public double getEdgeWeight() {
         return edgeWeight;
     }
     public Endpoints getEndpoints(){ return endpoints; }

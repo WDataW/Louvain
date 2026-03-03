@@ -76,6 +76,11 @@ public class Graph {
     }
 
     // methods
+
+    public double getGraphWeight(){// ABOODI -> m
+        return 0d;
+    }
+
     // expects a list on nodes and a list of edges to construct and return an adjacency list
     private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
         Map<Integer, List<Edge>> adjList = new HashMap<>();
