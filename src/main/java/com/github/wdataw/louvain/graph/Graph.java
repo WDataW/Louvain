@@ -77,9 +77,25 @@ public class Graph {
 
     // methods
 
-    public double getGraphWeight(){// ABOODI -> m
-        return 0d;
+   public double getGraphWeight() {
+    double totalWeight = 0.0;
+    
+    for (List<Edge> edges : adjList.values()) {
+        for (Edge e : edges) {
+            Node n1 = e.getEndpoints().getNode1();
+            Node n2 = e.getEndpoints().getNode2();
+            
+            if (n1.equals(n2)) {
+                // Add self-loops once
+                totalWeight += e.getEdgeWeight();
+            } else {
+                // Add half weight for normal edges (counted twice)
+                totalWeight += (e.getEdgeWeight() / 2.0);
+            }
+        }
     }
+    return totalWeight;
+}
 
     // expects a list on nodes and a list of edges to construct and return an adjacency list
     private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
