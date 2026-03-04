@@ -89,7 +89,7 @@ public class Graph {
                 // Add self-loops once
                 totalWeight += e.getEdgeWeight();
             } else {
-                // Add half weight for normal edges (counted twice)
+                // Add half weight for normal edges "counted twice"
                 totalWeight += (e.getEdgeWeight() / 2.0);
             }
         }
