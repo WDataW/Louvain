@@ -48,11 +48,26 @@ public class Partition {
         return communityDegreeSum;
     }
 
-    public void moveNodeToCommunity(Node node, int communityIndex){// moves a node from its current community to the specified communityIndex
-        nodeToCommunity[node.getNodeId()] = communityIndex;
-
+    
+    // moves a node from its current community to the specified communityIndex
+    public void moveNodeToCommunity(Node node, int communityIndex){
+        
+        //store the node id
+        int nodeId = node.getNodeId();
+  
         // update communityDegreeSum for both the involved communities - Tamim
+       
+        int oldCommunity = nodeToCommunity[nodeId];
 
+        if(oldCommunity == communityIndex) return;
+
+        double nodeDegree = nodeToDegree[nodeId];
+
+        communityDegreeSum[oldCommunity] -= nodeDegree;
+        communityDegreeSum[communityIndex] += nodeDegree;
+
+        nodeToCommunity[nodeId] = communityIndex;
+        
         // update communityWeightSum for both the involved communities - Angel
     }
 
