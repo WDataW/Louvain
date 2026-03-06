@@ -7,17 +7,22 @@ import java.util.*;
 
 public class Graph {
     // attributes
+    
     // used to initialize graphID
     private static int idCounter = 0;
+    
     // unique identifier of a graph
     private final int graphID;
+    
     // a list of all graph edges / a list of all graph nodes
     private List<Edge> edges = new ArrayList<Edge>();
     private List<Node> nodes = new ArrayList<Node>();
+    
     // an adjacency list structure to represent the graph
     private Map<Integer, List<Edge>> adjList = new HashMap<>();
 
     // constructors
+    
     Graph(List<Edge> edges){// KEY REMOVE
         graphID = ++idCounter;
         this.edges = new ArrayList<Edge>(edges);
@@ -32,6 +37,7 @@ public class Graph {
     }
 
     // getters
+    
     public int getGraphID() {
         return graphID;
     }
@@ -57,18 +63,26 @@ public class Graph {
     }
 
     // setters
+    
     public void setEdges(List<Edge> edges) {
         this.edges = edges;
     }
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
     }
+    
+    //add methods
+    
     public void addNode(Node newNode){
-        if(this.nodes.contains(newNode))return;// if node already exists, don't add it
+        
+        // if node already exists, don't add it
+        if(this.nodes.contains(newNode)) return;
+        
         this.nodes.add(newNode);
     }
     public void addEdge(Edge newEdge){
-        if(this.edges.contains(newEdge))return;// if edge already exists, don't add it
+        // if edge already exists, don't add it
+        if(this.edges.contains(newEdge))return;
         this.edges.add(newEdge);
     }
     public void updateAdjList(){
@@ -77,28 +91,29 @@ public class Graph {
 
     // methods
 
-public double getGraphWeight() { // m
-    double totalWeight = 0.0;
+    // this method is for calculating the graph weight or m
+    public double getGraphWeight() { 
+        double totalWeight = 0.0;
 
-    // Iterate through all edges directly
-    for (Edge e : edges) {
-        Node n1 = e.getEndpoints().getNode1();
-        Node n2 = e.getEndpoints().getNode2();
+        // Iterate through all edges directly
+        for (Edge e : edges) {
+            Node n1 = e.getEndpoints().getNode1();
+            Node n2 = e.getEndpoints().getNode2();
 
-        if (n1.equals(n2)) {
-            // Count self-loops once
-            totalWeight += e.getEdgeWeight();
-        } else {
-            // Count regular edges twice
-            totalWeight += (e.getEdgeWeight() * 2.0);
+            if (n1.equals(n2)) {
+                // Count self-loops once
+                totalWeight += e.getEdgeWeight();
+            } else {
+                // Count regular edges twice
+                totalWeight += (e.getEdgeWeight() * 2.0);
+            }
         }
-    }
 
     // Normalize by dividing by 2
     return totalWeight / 2.0;
 }
   
-// expects a list on nodes and a list of edges to construct and return an adjacency list
+    // this method expects a list on nodes and a list of edges to construct and return an adjacency list
     private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
         Map<Integer, List<Edge>> adjList = new HashMap<>();
         // create the keys (each nodeID points to an empty list)
@@ -111,18 +126,23 @@ public double getGraphWeight() { // m
         // nodeID -> {edge1,edge2, ...}
             Node node1 =  e.getEndpoints().getNode1();
             List<Edge> incidentOnNode1 = adjList.get(node1.getNodeId());// edges incident on node1
-            if(!incidentOnNode1.contains(e))incidentOnNode1.add(e);// if the edge doesn't already exist in incidentOnNode1 then add it there.
+            
+            // if the edge doesn't already exist in incidentOnNode1 then add it there.
+            if(!incidentOnNode1.contains(e)) incidentOnNode1.add(e);
 
             Node node2 =  e.getEndpoints().getNode2();
-            List<Edge> incidentOnNode2 = adjList.get(node2.getNodeId());// edges incident on node2
-            if(!incidentOnNode2.contains(e))incidentOnNode2.add(e);// if the edge doesn't already exist in incidentOnNode2 then add it there.
+            // edges incident on node2
+            List<Edge> incidentOnNode2 = adjList.get(node2.getNodeId());
+            
+            // if the edge doesn't already exist in incidentOnNode2 then add it there.
+            if(!incidentOnNode2.contains(e))incidentOnNode2.add(e);
 
         }
         return adjList;
     }
 
     // expects a file name and converts the file contents into a Graph object with edges and nodes
-   public static Graph readGraph(String filename){
+    public static Graph readGraph(String filename){
         Scanner input = null;
 
         // loading the graph file from the resources directory
@@ -132,14 +152,23 @@ public double getGraphWeight() { // m
         }
         input = new Scanner(inputStream);
 
-        Graph newGraph = new Graph(new ArrayList<Edge>(),new ArrayList<Node>());// start with an empty graph, then add nodes and edges one by one
-        while(input.hasNextLine()){// read the file line by line
-            String line = input.nextLine();// each line represents an edge
-            String[] edgeComponents = line.split(" ");// each line must follow the following structure: "node1ID node2ID weight"
+        // start with an empty graph, then add nodes and edges one by one
+        Graph newGraph = new Graph(new ArrayList<Edge>(),new ArrayList<Node>());
+        
+        // read the file line by line
+        while(input.hasNextLine()){
+            
+            // each line represents an edge
+            String line = input.nextLine();
+            // each line must follow the following structure: "node1ID node2ID weight"
+            String[] edgeComponents = line.split(" ");
 
-            // construct edge object
+            //construct two nodes to construct an edge
             Node node1 = new Node(Integer.parseInt(edgeComponents[0]));
             Node node2 = new Node(Integer.parseInt(edgeComponents[1]));
+            
+
+            // construct edge object
             float weight = Float.parseFloat(edgeComponents[2]);
             Edge edge = new Edge(node1,node2,weight);
 
@@ -148,7 +177,9 @@ public double getGraphWeight() { // m
             newGraph.addNode(node2);
             newGraph.addEdge(edge);
         }
-        newGraph.updateAdjList();// adjList is created when the object is created, then updated when we're done inserting nodes and edges
+        
+        // adjList is created when the object is created, then updated when we're done inserting nodes and edges
+        newGraph.updateAdjList();
         return newGraph;
     }
 }

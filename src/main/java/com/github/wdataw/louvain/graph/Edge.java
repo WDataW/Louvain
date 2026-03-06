@@ -7,13 +7,16 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Edge {
-    // attributes
+    
+    //attributes
+    
     private static int idCounter = 0;
     private final int edgeID;
     private double edgeWeight;
     private Endpoints endpoints;
 
     // constructors
+    
     public Edge(Endpoints endpoints ,float edgeWeight) {
         this.edgeWeight = edgeWeight;
         this.endpoints = new Endpoints(endpoints.getNode1(), endpoints.getNode2());
@@ -26,6 +29,7 @@ public class Edge {
     }
 
     // setters
+    
     public void setEdgeWeight(float EdgeWeight) {
         this.edgeWeight = EdgeWeight;
     }
@@ -39,6 +43,7 @@ public class Edge {
     }
 
     // getters
+    
     public int getEdgeID() {
         return edgeID;
     }
@@ -47,7 +52,8 @@ public class Edge {
     }
     public Endpoints getEndpoints(){ return endpoints; }
 
-
+    //equals
+    
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
