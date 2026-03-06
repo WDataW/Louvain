@@ -30,45 +30,46 @@ public class Partition {
     when every node in its community*/
     private double[] initCommunityDegrees(Graph graph){ 
         
-        /*initilize the communityDegreeSum array 
-        with the size of the number of nodes in the community*/
-        double[] communityDegreeSum = new double[graph.getNodes().size()]; 
+        /*
+        initilize the communityDegreeSum array
+        with the size of the number communities
+        */
+        double[] communityDegreeSum = new double[nodeToCommunity.length];
         
         // for each node in the graph
         for(Node node: graph.getNodes()){
             //store the node id
             int nodeId = node.getNodeId();
             //store the degree of that node from the nodeToDegree array
-            double degree = this.nodeToDegree[nodeId];
+            double degree = degreeOfNode(nodeId);
             //store the degree of the node in the communityDegreeSum array
             communityDegreeSum[nodeId] = degree;
         }
-        
+        // reasoning: at the beginning each node is in its own community, therefore the degree of each community = the degree of the node within it
         //return the array
         return communityDegreeSum;
     }
 
     
-    // moves a node from its current community to the specified communityIndex
-    public void moveNodeToCommunity(Node node, int communityIndex){
-        
+    // moves a node from its current community to the specified newCommunity
+    public void moveNodeToCommunity(Node node, int newCommunity){
         //store the node id
         int nodeId = node.getNodeId();
-  
-        // update communityDegreeSum for both the involved communities - Tamim
-       
-        int oldCommunity = nodeToCommunity[nodeId];
+        if(communityOf(nodeId) == newCommunity) return;// no move happens if source and destination are the same
 
-        if(oldCommunity == communityIndex) return;
+        updateCommunityDegree(nodeId, newCommunity);// update degrees of involved communities
+//      updateCommunityWeight(nodeId, newCommunity);
 
-        double nodeDegree = nodeToDegree[nodeId];
+        nodeToCommunity[nodeId] = newCommunity;
+    }
 
+    // NOTE: only invoke before actually moving the node to a new community
+    // used to always ensure the total degree is reserved, e.g. +1 degree in one community means -1 in another.
+    private void updateCommunityDegree(int nodeId,int newCommunity){
+        int oldCommunity = communityOf(nodeId);
+        double nodeDegree = degreeOfNode(nodeId);
+        communityDegreeSum[newCommunity] += nodeDegree;
         communityDegreeSum[oldCommunity] -= nodeDegree;
-        communityDegreeSum[communityIndex] += nodeDegree;
-
-        nodeToCommunity[nodeId] = communityIndex;
-        
-        // update communityWeightSum for both the involved communities - Angel
     }
 
     private int[] initCommunities(Graph graph){// initializes the communities, each node = a community
@@ -95,8 +96,14 @@ public class Partition {
     public int communityOf(Node node){// takes a node and returns the community containing the node
         return this.nodeToCommunity[node.getNodeId()];
     }
+    public int communityOf(int nodeId){// takes a node and returns the community containing the node
+        return this.nodeToCommunity[nodeId];
+    }
     public double degreeOfNode(Node node){// takes a node and returns the degree of the node
         return this.nodeToDegree[node.getNodeId()];
+    }
+    public double degreeOfNode(int nodeID){// takes a node and returns the degree of the node
+        return this.nodeToDegree[nodeID];
     }
     public double degreeOfCommunity(int communityIndex){// takes a community index and returns the degree of the community
         return this.communityDegreeSum[communityIndex];
@@ -114,4 +121,7 @@ public class Partition {
         return communityWeightSum;
     }
 
+    public double[] getCommunityDegreeSum() {
+        return communityDegreeSum;
+    }
 }
