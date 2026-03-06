@@ -9,11 +9,16 @@ public class Main {
         Graph exampleGraph = Graph.getExample();
         Partition communities = new Partition(exampleGraph);
 
-        Node node = exampleGraph.getNodeByID(1);// node number 1
-        System.out.println(communities.degreeOfNode(node));
-        System.out.println(communities.communityOf(node));
-
-        communities.moveNodeToCommunity(node,2);
-        System.out.println(communities.communityOf(node));
+        for(double degree: communities.getCommunityDegreeSum()){
+            System.out.println(degree);
+        }
+        System.out.println();
+        Node node = exampleGraph.getNodeByID(0);
+        communities.moveNodeToCommunity(node,3);
+        Node node2 = exampleGraph.getNodeByID(2);
+        communities.moveNodeToCommunity(node2,1);
+        for(double degree: communities.getCommunityDegreeSum()){
+            System.out.println(degree);
+        }
     }
 }
