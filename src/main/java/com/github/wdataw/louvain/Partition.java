@@ -17,7 +17,7 @@ public class Partition {
         this.nodeToCommunity = initCommunities(graph);
         this.nodeToDegree = initDegrees(graph);
 //      this.communityWeightSum = initCommunityWeights(graph);
-//      this.communityDegreeSum = initCommunityDegrees(graph);
+        this.communityDegreeSum = initCommunityDegrees(graph);
     }
 
 
@@ -25,15 +25,49 @@ public class Partition {
 //
 //    }
 
-//    private double[] initCommunityDegrees(Graph graph){ Tamim
-//
-//    }
+    
+    /*this method is for calculating the sigma C hat 
+    when every node in its community*/
+    private double[] initCommunityDegrees(Graph graph){ 
+        
+        /*initilize the communityDegreeSum array 
+        with the size of the number of nodes in the community*/
+        double[] communityDegreeSum = new double[graph.getNodes().size()]; 
+        
+        // for each node in the graph
+        for(Node node: graph.getNodes()){
+            //store the node id
+            int nodeId = node.getNodeId();
+            //store the degree of that node from the nodeToDegree array
+            double degree = this.nodeToDegree[nodeId];
+            //store the degree of the node in the communityDegreeSum array
+            communityDegreeSum[nodeId] = degree;
+        }
+        
+        //return the array
+        return communityDegreeSum;
+    }
 
-    public void moveNodeToCommunity(Node node, int communityIndex){// moves a node from its current community to the specified communityIndex
-        nodeToCommunity[node.getNodeId()] = communityIndex;
-
+    
+    // moves a node from its current community to the specified communityIndex
+    public void moveNodeToCommunity(Node node, int communityIndex){
+        
+        //store the node id
+        int nodeId = node.getNodeId();
+  
         // update communityDegreeSum for both the involved communities - Tamim
+       
+        int oldCommunity = nodeToCommunity[nodeId];
 
+        if(oldCommunity == communityIndex) return;
+
+        double nodeDegree = nodeToDegree[nodeId];
+
+        communityDegreeSum[oldCommunity] -= nodeDegree;
+        communityDegreeSum[communityIndex] += nodeDegree;
+
+        nodeToCommunity[nodeId] = communityIndex;
+        
         // update communityWeightSum for both the involved communities - Angel
     }
 
