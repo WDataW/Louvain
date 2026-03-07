@@ -4,11 +4,11 @@ import java.util.List;
 import com.github.wdataw.louvain.graph.*;
 
 public class Partition {
-    private final int[] nodeToCommunity;
-    private final double[] nodeToDegree;
+    private final int[] nodeToCommunity;// maps each node to its community
+    private final double[] nodeToDegree;// maps each node to its degree
     private final double[] communityWeightSum;// Sigma C
     private final double[] communityDegreeSum;// Sigma C hat
-    private final Graph graph;// adjacency list for moveNodeToCommunity
+    private final Graph graph;
 
     Partition(Graph graph){
         this.graph = graph;
