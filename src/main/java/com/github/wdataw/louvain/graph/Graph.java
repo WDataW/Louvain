@@ -95,9 +95,9 @@ public double getGraphWeight() { // m
     }
 
     // Normalize by dividing by 2
-    return totalWeight / 2.0;
+    return totalWeight;
 }
-  
+
 // expects a list on nodes and a list of edges to construct and return an adjacency list
     private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
         Map<Integer, List<Edge>> adjList = new HashMap<>();

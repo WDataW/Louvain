@@ -9,6 +9,11 @@ public class Main {
         Graph exampleGraph = Graph.getExample();
         Partition communities = new Partition(exampleGraph);
 
+        System.out.println("initial community weights:");
+        for(double weight: communities.getCommunityWeightSum()){
+            System.out.println(weight);
+        }
+        System.out.println("\ninitial community degrees:");
         for(double degree: communities.getCommunityDegreeSum()){
             System.out.println(degree);
         }
@@ -17,8 +22,16 @@ public class Main {
         communities.moveNodeToCommunity(node,3);
         Node node2 = exampleGraph.getNodeByID(2);
         communities.moveNodeToCommunity(node2,1);
+
+        System.out.println("final community weights:");
+        for(double weight: communities.getCommunityWeightSum()){
+            System.out.println(weight);
+        }
+        System.out.println("\nfinal community degrees:");
         for(double degree: communities.getCommunityDegreeSum()){
             System.out.println(degree);
         }
+
+        System.out.println("\ngraph weight = "+exampleGraph.getGraphWeight());
     }
 }
