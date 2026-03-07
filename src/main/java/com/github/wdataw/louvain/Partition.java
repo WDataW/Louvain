@@ -1,6 +1,7 @@
 package com.github.wdataw.louvain;
 
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,13 +12,11 @@ public class Partition {
     private double[] communityDegreeSum;// Sigma C hat
     private Map<Integer, List<Edge>> adjList;// adjacency list for moveNodeToCommunity
 
-
     Partition(Graph graph){
-        this.adjList = graph.getAdjList();
         this.nodeToCommunity = initCommunities(graph);
         this.nodeToDegree = initDegrees(graph);
-        this.communityWeightSum = initCommunityWeights(graph);
-//      this.communityDegreeSum = initCommunityDegrees(graph);
+//      this.communityWeightSum = initCommunityWeights(graph);
+        this.communityDegreeSum = initCommunityDegrees(graph);
     }
 
 
@@ -34,17 +33,44 @@ public class Partition {
             // An edge counts toward Sigma_C only when both endpoints share the same community
             if(nodeToCommunity[node1.getNodeId()] == nodeToCommunity[node2.getNodeId()]){
                 int community = nodeToCommunity[node1.getNodeId()];
-                communityWeightSum[community] += e.getEdgeWeight();
+                if(node1.equals(node2)){
+                    communityWeightSum[community] += e.getEdgeWeight();// self-loop: count once
+                } else {
+                    communityWeightSum[community] += 2 * e.getEdgeWeight();// regular edge: count twice (u→v and v→u)
+                }
             }
         }
         return communityWeightSum;
     }
 
-//    private double[] initCommunityDegrees(Graph graph){ Tamim
-//
-//    }
+    
+    /*this method is for calculating the sigma C hat 
+    when every node in its community*/
+    private double[] initCommunityDegrees(Graph graph){ 
+        
+        /*
+        initilize the communityDegreeSum array
+        with the size of the number communities
+        */
+        double[] communityDegreeSum = new double[nodeToCommunity.length];
+        
+        // for each node in the graph
+        for(Node node: graph.getNodes()){
+            //store the node id
+            int nodeId = node.getNodeId();
+            //store the degree of that node from the nodeToDegree array
+            double degree = degreeOfNode(nodeId);
+            //store the degree of the node in the communityDegreeSum array
+            communityDegreeSum[nodeId] = degree;
+        }
+        // reasoning: at the beginning each node is in its own community, therefore the degree of each community = the degree of the node within it
+        //return the array
+        return communityDegreeSum;
+    }
 
-   public void moveNodeToCommunity(Node node, int newCommunity){// moves a node from its current community to the specified communityIndex
+    
+    // moves a node from its current community to the specified newCommunity
+    public void moveNodeToCommunity(Node node, int newCommunity){
         int oldCommunity = nodeToCommunity[node.getNodeId()];
         nodeToCommunity[node.getNodeId()] = newCommunity;
 
@@ -65,22 +91,41 @@ public class Partition {
             boolean isSelfLoop = neighbor.equals(node);
             int neighborCommunity;
             if(isSelfLoop){
-             neighborCommunity = oldCommunity;     // self-loop → use saved old community
-                } else {
-                     neighborCommunity = nodeToCommunity[neighbor.getNodeId()]; // normal edge → look up neighbor's community
-                       }
+                neighborCommunity = oldCommunity;
+            } else {
+                neighborCommunity = nodeToCommunity[neighbor.getNodeId()];
+            }
 
             // The neighbor was previously with `node` in oldCommunity
             // → that edge no longer counts toward oldCommunity's weight
             if(neighborCommunity == oldCommunity){
-                communityWeightSum[oldCommunity] -= e.getEdgeWeight();
+                if(isSelfLoop){
+                    communityWeightSum[oldCommunity] -= e.getEdgeWeight();// self-loop: count once
+                } else {
+                    communityWeightSum[oldCommunity] -= 2 * e.getEdgeWeight();// regular edge: count twice (u→v and v→u)
+                }
             }
             // The neighbor is in newCommunity (or this is a self-loop moving to newCommunity)
             // → that edge now counts toward newCommunity's weight
             if(neighborCommunity == newCommunity || isSelfLoop){
-                communityWeightSum[newCommunity] += e.getEdgeWeight();
+                if(isSelfLoop){
+                    communityWeightSum[newCommunity] += e.getEdgeWeight();// self-loop: count once
+                } else {
+                    communityWeightSum[newCommunity] += 2 * e.getEdgeWeight();// regular edge: count twice (u→v and v→u)
+                }
             }
+            
         }
+        
+    }
+
+    // NOTE: only invoke before actually moving the node to a new community
+    // used to always ensure the total degree is reserved, e.g. +1 degree in one community means -1 in another.
+    private void updateCommunityDegree(int nodeId,int newCommunity){
+        int oldCommunity = communityOf(nodeId);
+        double nodeDegree = degreeOfNode(nodeId);
+        communityDegreeSum[newCommunity] += nodeDegree;
+        communityDegreeSum[oldCommunity] -= nodeDegree;
     }
 
     private int[] initCommunities(Graph graph){// initializes the communities, each node = a community
@@ -107,8 +152,14 @@ public class Partition {
     public int communityOf(Node node){// takes a node and returns the community containing the node
         return this.nodeToCommunity[node.getNodeId()];
     }
+    public int communityOf(int nodeId){// takes a node and returns the community containing the node
+        return this.nodeToCommunity[nodeId];
+    }
     public double degreeOfNode(Node node){// takes a node and returns the degree of the node
         return this.nodeToDegree[node.getNodeId()];
+    }
+    public double degreeOfNode(int nodeID){// takes a node and returns the degree of the node
+        return this.nodeToDegree[nodeID];
     }
     public double degreeOfCommunity(int communityIndex){// takes a community index and returns the degree of the community
         return this.communityDegreeSum[communityIndex];
@@ -126,4 +177,7 @@ public class Partition {
         return communityWeightSum;
     }
 
+    public double[] getCommunityDegreeSum() {
+        return communityDegreeSum;
+    }
 }
