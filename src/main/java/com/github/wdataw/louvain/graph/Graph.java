@@ -77,27 +77,28 @@ public class Graph {
 
     // methods
 
-   public double getGraphWeight() {
+public double getGraphWeight() { // m
     double totalWeight = 0.0;
-    
-    for (List<Edge> edges : adjList.values()) {
-        for (Edge e : edges) {
-            Node n1 = e.getEndpoints().getNode1();
-            Node n2 = e.getEndpoints().getNode2();
-            
-            if (n1.equals(n2)) {
-                // Add self-loops once
-                totalWeight += e.getEdgeWeight();
-            } else {
-                // Add half weight for normal edges "counted twice"
-                totalWeight += (e.getEdgeWeight() / 2.0);
-            }
+
+    // Iterate through all edges directly
+    for (Edge e : edges) {
+        Node n1 = e.getEndpoints().getNode1();
+        Node n2 = e.getEndpoints().getNode2();
+
+        if (n1.equals(n2)) {
+            // Count self-loops once
+            totalWeight += e.getEdgeWeight();
+        } else {
+            // Count regular edges twice
+            totalWeight += (e.getEdgeWeight() * 2.0);
         }
     }
+
+    // Normalize by dividing by 2
     return totalWeight;
 }
 
-    // expects a list on nodes and a list of edges to construct and return an adjacency list
+// expects a list on nodes and a list of edges to construct and return an adjacency list
     private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
         Map<Integer, List<Edge>> adjList = new HashMap<>();
         // create the keys (each nodeID points to an empty list)
@@ -121,7 +122,7 @@ public class Graph {
     }
 
     // expects a file name and converts the file contents into a Graph object with edges and nodes
-    public static Graph readGraph(String filename){
+   public static Graph readGraph(String filename){
         Scanner input = null;
 
         // loading the graph file from the resources directory
