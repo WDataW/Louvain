@@ -95,7 +95,7 @@ public double getGraphWeight() { // m
     }
 
     // Normalize by dividing by 2
-    return totalWeight;
+    return totalWeight / 2.0;
 }
 
 // expects a list on nodes and a list of edges to construct and return an adjacency list
