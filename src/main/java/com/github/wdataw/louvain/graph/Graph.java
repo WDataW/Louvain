@@ -13,21 +13,24 @@ public class Graph {
     private final int graphID;
     // a list of all graph edges / a list of all graph nodes
     private List<Edge> edges = new ArrayList<Edge>();
+    private HashSet<Integer> edgeIds = new HashSet<Integer>();
     private List<Node> nodes = new ArrayList<Node>();
+    private HashSet<Integer> nodeIds = new HashSet<Integer>();
+
     // an adjacency list structure to represent the graph
     private Map<Integer, List<Edge>> adjList = new HashMap<>();
 
     // constructors
-    Graph(List<Edge> edges){// KEY REMOVE
-        graphID = ++idCounter;
-        this.edges = new ArrayList<Edge>(edges);
-        this.nodes = Node.extractNodes(this.edges);
-        this.adjList= toAdjList(this.edges,this.nodes);
-    }
     Graph(List<Edge> edges, List<Node> nodes){
         graphID = ++idCounter;
         this.edges = new ArrayList<Edge>(edges);
         this.nodes = new ArrayList<Node>(nodes);
+        this.adjList= toAdjList(this.edges,this.nodes);
+    }
+    Graph(){
+        graphID = ++idCounter;
+        this.edges = new ArrayList<Edge>();
+        this.nodes = new ArrayList<Node>();
         this.adjList= toAdjList(this.edges,this.nodes);
     }
 
@@ -45,7 +48,7 @@ public class Graph {
         return adjList;
     }
     public static Graph getExample(){
-        return Graph.readGraph("/example-graph-small.txt");
+        return Graph.readGraph("/example-graph-small.txt"," ");
     }
 
     // testing only - KEY REMOVE
@@ -64,11 +67,13 @@ public class Graph {
         this.nodes = nodes;
     }
     public void addNode(Node newNode){
-        if(this.nodes.contains(newNode))return;// if node already exists, don't add it
+        if(this.nodeIds.contains(newNode.getNodeId()))return;// if node already exists, don't add it
+        this.nodeIds.add(newNode.getNodeId());
         this.nodes.add(newNode);
     }
     public void addEdge(Edge newEdge){
-        if(this.edges.contains(newEdge))return;// if edge already exists, don't add it
+        if(this.edgeIds.contains(newEdge.getEdgeID()))return;// if edge already exists, don't add it
+        this.edgeIds.add(newEdge.getEdgeID());
         this.edges.add(newEdge);
     }
     public void updateAdjList(){
@@ -122,7 +127,7 @@ public double getGraphWeight() { // m
     }
 
     // expects a file name and converts the file contents into a Graph object with edges and nodes
-   public static Graph readGraph(String filename){
+   public static Graph readGraph(String filename, String delimiter){
         Scanner input = null;
 
         // loading the graph file from the resources directory
@@ -132,15 +137,17 @@ public double getGraphWeight() { // m
         }
         input = new Scanner(inputStream);
 
-        Graph newGraph = new Graph(new ArrayList<Edge>(),new ArrayList<Node>());// start with an empty graph, then add nodes and edges one by one
+        Graph newGraph = new Graph();// start with an empty graph, then add nodes and edges one by one
         while(input.hasNextLine()){// read the file line by line
-            String line = input.nextLine();// each line represents an edge
-            String[] edgeComponents = line.split(" ");// each line must follow the following structure: "node1ID node2ID weight"
+            String line = input.nextLine().trim();// each line represents an edge
+            String[] edgeComponents = line.split(delimiter);// each line must follow the following structure: "node1ID node2ID weight"
 
             // construct edge object
             Node node1 = new Node(Integer.parseInt(edgeComponents[0]));
             Node node2 = new Node(Integer.parseInt(edgeComponents[1]));
-            float weight = Float.parseFloat(edgeComponents[2]);
+            float weight = 1f; // if the dataset doesn't provide edge weights, then the weight is 1 by default
+            if(edgeComponents.length==3) weight = Float.parseFloat(edgeComponents[2]);
+
             Edge edge = new Edge(node1,node2,weight);
 
             // add nodes and edge to their lists
