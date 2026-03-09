@@ -139,7 +139,7 @@ public double getGraphWeight() { // m
 
         Graph newGraph = new Graph();// start with an empty graph, then add nodes and edges one by one
         while(input.hasNextLine()){// read the file line by line
-            String line = input.nextLine().trim();// each line represents an edge
+            String line = input.nextLine();// each line represents an edge
             String[] edgeComponents = line.split(delimiter);// each line must follow the following structure: "node1ID node2ID weight"
 
             // construct edge object
