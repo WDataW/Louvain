@@ -8,6 +8,6 @@ package com.github.wdataw.louvain;
  *
  * @author Tkmyg12345
  */
-public class louvain {
+public class Louvain {
     
 }
