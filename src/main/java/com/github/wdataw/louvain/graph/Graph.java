@@ -140,7 +140,8 @@ public double getGraphWeight() { // m
             // construct edge object
             Node node1 = new Node(Integer.parseInt(edgeComponents[0]));
             Node node2 = new Node(Integer.parseInt(edgeComponents[1]));
-            float weight = Float.parseFloat(edgeComponents[2]);
+            float weight = 1f; // if the dataset doesn't provide edge weights, then the weight is 1 by default
+            if(edgeComponents.length==3) weight = Float.parseFloat(edgeComponents[2]);
             Edge edge = new Edge(node1,node2,weight);
 
             // add nodes and edge to their lists
