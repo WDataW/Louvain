@@ -57,10 +57,10 @@ const draw = (graph)=>{
             }});
     },15000)
 }
-const display = async (url)=>{
+const display = async (url)=> {
     const resposnse = await fetch(url);
     if(!resposnse.ok)return;
-    const graph = await resposnse.json()
+    const graph = await resposnse.json();
     draw(graph);
 }
-display("/initialGraph.json")
+display("/initialGraph.json");
