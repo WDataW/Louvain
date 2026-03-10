@@ -33,5 +33,15 @@ public class Main {
         }
 
         System.out.println("\ngraph weight = "+exampleGraph.getGraphWeight());
+        
+        Graph g = Graph.getExample();
+        
+               Partition p = new Partition(g);
+
+                  double Q = Louvain.modularityOf(g, p);
+                  
+                    System.out.println("\n"+"Modularity is: "+Q);
+        
+        
     }
 }

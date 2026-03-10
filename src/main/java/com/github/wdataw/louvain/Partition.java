@@ -72,7 +72,9 @@ public class Partition {
         updateCommunityWeight(nodeId, newCommunity);// update weights of involved communities
         nodeToCommunity[nodeId] = newCommunity;// update node community mapping
     }
-
+    
+    
+    
     // NOTE: only invoke before actually moving the node to a new community
     // used to update the weights of communities that are involved in a node move (when the node moves from one community to another).
     private void updateCommunityWeight(int nodeId, int newCommunity){
