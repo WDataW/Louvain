@@ -20,7 +20,7 @@
             jsonFile.println("\"nodes\":[");// start of nodes array
             List<Node> nodes = graph.getNodes();
             for(Node n: nodes){
-                String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d}",n.getNodeId(), n.getNodeId(),communities.communityOf(n));
+                String item = String.format(java.util.Locale.US,"{\"id\":%d,\"label\":\"%d\",\"group\":%d}",n.getNodeId(), n.getNodeId(),communities.communityOf(n));
                 if(!n.equals(nodes.getLast())) item+=",";
                 jsonFile.println(item);
             }
@@ -31,7 +31,7 @@
             for(Edge e: edges){
                 int node1Id = e.getEndpoints().getNode1().getNodeId();
                 int node2Id = e.getEndpoints().getNode2().getNodeId();
-                String item = String.format("{\"from\":%d,\"to\":%d}", node1Id, node2Id);
+                String item = String.format(java.util.Locale.US,"{\"from\":%d,\"to\":%d}", node1Id, node2Id);
                 if(!e.equals(edges.getLast())) item+=",";
                 jsonFile.println(item);
             }
