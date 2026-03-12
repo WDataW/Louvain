@@ -35,6 +35,7 @@ const draw = (graph)=>{
             },
         },
         physics: {
+            enabled:false,
             stabilization: false,
             barnesHut: {
                 gravitationalConstant: -500000,
