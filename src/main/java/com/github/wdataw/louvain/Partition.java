@@ -1,6 +1,9 @@
 package com.github.wdataw.louvain;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import com.github.wdataw.louvain.graph.*;
 
 public class Partition {
@@ -139,6 +142,16 @@ public class Partition {
         }
         return nodeToDegree;
     }
+
+
+    //TESTING ONLY
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Partition partition = (Partition) o;
+        return Objects.deepEquals(nodeToCommunity, partition.nodeToCommunity);
+    }
+
 
     public int communityOf(Node node){// takes a node and returns the community containing the node
         return this.nodeToCommunity[node.getNodeId()];

@@ -23,6 +23,7 @@ const draw = (graph)=>{
     const options = {
         nodes: {
             shape: "dot",
+            size:500,
             font: {
                 size: 0,
             },
@@ -40,7 +41,7 @@ const draw = (graph)=>{
             barnesHut: {
                 gravitationalConstant: -500000,
                 springConstant: 0.001,
-                springLength: 150,
+                springLength: 50,
                 centralGravity:0.3,
             },
         },

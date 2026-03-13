@@ -1,37 +1,76 @@
     package com.github.wdataw.louvain.graph;
 
     import com.github.wdataw.louvain.Partition;
-    import org.jgrapht.alg.drawing.FRLayoutAlgorithm2D;
-    import org.jgrapht.alg.drawing.model.Box2D;
-    import org.jgrapht.alg.drawing.model.MapLayoutModel2D;
-    import org.jgrapht.alg.drawing.model.Point2D;
+    import org.gephi.graph.api.GraphController;
+    import org.gephi.graph.api.GraphModel;
+    import org.gephi.layout.plugin.AutoLayout;
+    import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2;
+    import org.gephi.project.api.ProjectController;
     import org.jgrapht.graph.DefaultEdge;
     import org.jgrapht.graph.DefaultUndirectedWeightedGraph;
+    import org.openide.util.Lookup;
 
+    import java.awt.geom.Point2D;
     import java.io.FileNotFoundException;
     import java.io.PrintWriter;
+    import java.util.HashMap;
     import java.util.List;
+    import java.util.Map;
+    import java.util.concurrent.TimeUnit;
 
     public class JSONExporter {
-        private static Point2D[] computePositions(Graph graph){
-            org.jgrapht.Graph<String, DefaultEdge> JGraph = new DefaultUndirectedWeightedGraph<>(DefaultEdge.class);
-            for (Node n: graph.getNodes()){
-                JGraph.addVertex(stringify(n.getNodeId()));
-            }
-            for(Edge e: graph.getEdges()){
-                String node1Id = stringify(e.getEndpoints().getNode1().getNodeId());
-                String node2Id = stringify(e.getEndpoints().getNode2().getNodeId());
-                JGraph.addEdge(node1Id,node2Id);
-            }
-            FRLayoutAlgorithm2D<String, DefaultEdge> layout = new FRLayoutAlgorithm2D<>(100); // bump to 500+
-            MapLayoutModel2D<String> model = new MapLayoutModel2D<>(new Box2D(5000, 5000));
-            layout.layout(JGraph, model);
-
-            Point2D[] positions = new Point2D[graph.getNodes().size()];
+        private static Point2D[] computePositions(Graph graph) {
             List<Node> nodes = graph.getNodes();
-            for (int i = 0; i < nodes.size(); i++) {
-                Point2D pos = model.get(stringify(nodes.get(i).getNodeId()));
-                positions[i] = pos;
+            int n = nodes.size();
+            if (n == 0) return new Point2D[0];
+
+            // Init Gephi
+            ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+            pc.newProject();
+            GraphModel graphModel = Lookup.getDefault()
+                    .lookup(GraphController.class)
+                    .getGraphModel();
+            org.gephi.graph.api.Graph gephiGraph = graphModel.getUndirectedGraph();
+            org.gephi.graph.api.GraphFactory factory = graphModel.factory();
+
+            // Convert nodes
+            Map<String, org.gephi.graph.api.Node> nodeMap = new HashMap<>();
+            for (Node n2 : nodes) {
+                String id = stringify(n2.getNodeId());
+                org.gephi.graph.api.Node gNode = factory.newNode(id);
+                gephiGraph.addNode(gNode);
+                nodeMap.put(id, gNode);
+            }
+
+            // Convert edges
+            for (Edge e : graph.getEdges()) {
+                String n1 = stringify(e.getEndpoints().getNode1().getNodeId());
+                String n2 = stringify(e.getEndpoints().getNode2().getNodeId());
+                gephiGraph.addEdge(factory.newEdge(nodeMap.get(n1), nodeMap.get(n2), false));
+            }
+
+            // Run FA2 iteration-based (no AutoLayout overhead)
+            ForceAtlas2 fa2 = new ForceAtlas2(null);
+            fa2.setGraphModel(graphModel);
+            fa2.initAlgo();
+            fa2.resetPropertiesValues();
+            fa2.setBarnesHutOptimize(true);
+            fa2.setBarnesHutTheta(1.2);
+            fa2.setLinLogMode(true);
+            fa2.setScalingRatio(10.0);
+            fa2.setGravity(0.5);
+
+            int iterations = Math.min(1000, n * 2);
+            for (int i = 0; i < iterations; i++) {
+                fa2.goAlgo();
+            }
+            fa2.endAlgo();
+
+            // Extract positions
+            Point2D[] positions = new Point2D[n];
+            for (int i = 0; i < n; i++) {
+                org.gephi.graph.api.Node gNode = nodeMap.get(stringify(nodes.get(i).getNodeId()));
+                positions[i] = new java.awt.geom.Point2D.Double(gNode.x(), gNode.y());
             }
             return positions;
         }
