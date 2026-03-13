@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Graph {
     // attributes
+    private double weight;
+    private int size;
     // used to initialize graphID
     private static int idCounter = 0;
     // unique identifier of a graph
@@ -24,12 +26,17 @@ public class Graph {
         this.edges = new ArrayList<Edge>(edges);
         this.nodes = new ArrayList<Node>(nodes);
         this.adjList= toAdjList(this.edges,this.nodes);
+        this.weight = getGraphWeight();
+        this.size = this.nodes.size();
+
     }
     Graph(){
         graphID = ++idCounter;
         this.edges = new ArrayList<Edge>();
         this.nodes = new ArrayList<Node>();
         this.adjList= toAdjList(this.edges,this.nodes);
+        this.weight = 0;
+        this.size = 0;
     }
 
     // getters
@@ -49,6 +56,12 @@ public class Graph {
         return Graph.readGraph("/example-graph-small.txt"," ");
     }
 
+    public double getWeight(){
+        return this.weight;
+    }
+    public int getSize(){
+        return this.size;
+    }
     // testing only - KEY REMOVE
     public Node getNodeByID(int nodeID){
         for(Node n:this.nodes){
@@ -68,6 +81,7 @@ public class Graph {
         if(this.nodeIds.contains(newNode.getNodeId()))return;// if node already exists, don't add it
         this.nodeIds.add(newNode.getNodeId());
         this.nodes.add(newNode);
+        this.size++;
     }
     public void addEdge(Edge newEdge){
         if(this.edgeIds.contains(newEdge.getEdgeID()))return;// if edge already exists, don't add it
@@ -77,8 +91,11 @@ public class Graph {
     public void updateAdjList(){
         this.adjList = toAdjList(this.edges,this.nodes);
     }
-
+    private void updateGraphWeight(){
+        this.weight = getGraphWeight();
+    }
     // methods
+
 
 public double getGraphWeight() { // m
     double totalWeight = 0.0;
@@ -154,6 +171,7 @@ public double getGraphWeight() { // m
             newGraph.addEdge(edge);
         }
         newGraph.updateAdjList();// adjList is created when the object is created, then updated when we're done inserting nodes and edges
-        return newGraph;
+       newGraph.updateGraphWeight();
+       return newGraph;
     }
 }
