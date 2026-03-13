@@ -20,6 +20,14 @@ public class Partition {
         this.communityWeightSum = initCommunityWeights(graph);
         this.communityDegreeSum = initCommunityDegrees(graph);
     }
+    public double computeModularityGain(Node node, int destinationCommunity, double connectionWeight ){
+        return connectionWeight
+                - (degreeOfNode(node) * degreeOfCommunity(destinationCommunity))
+                / (2.0 * graph.getWeight());
+    }
+    public void removeNodeFromCommunity(Node node){
+        moveNodeToCommunity(node, graph.getSize());// last index is reserved for temporary community swappings
+    }
 
     /*this method is for calculating the sigma C hat
     when every node in its community*/
@@ -28,7 +36,7 @@ public class Partition {
         initilize the communityDegreeSum array
         with the size of the number communities
         */
-        double[] communityDegreeSum = new double[nodeToCommunity.length];
+        double[] communityDegreeSum = new double[nodeToCommunity.length + 1];
         // for each node in the graph
         for(Node node: graph.getNodes()){
             //store the node id
@@ -48,7 +56,7 @@ public class Partition {
     // We still iterate all edges to correctly handle self-loops.
     private double[] initCommunityWeights(Graph graph){ // Angel
         // Array sized by number of nodes (community IDs match node IDs at initialization)
-        double[] communityWeightSum = new double[graph.getNodes().size()];
+        double[] communityWeightSum = new double[graph.getNodes().size() + 1];
         for(Edge e : graph.getEdges()){
             Node node1 = e.getEndpoints().getNode1();
             Node node2 = e.getEndpoints().getNode2();
@@ -123,7 +131,7 @@ public class Partition {
     }
 
     private int[] initCommunities(Graph graph){// initializes the communities, each node = a community
-        int[] nodeToCommunity = new int[graph.getNodes().size()];
+        int[] nodeToCommunity = new int[graph.getNodes().size() ];
         for(Node n: graph.getNodes()){// each node starts in its own community
             nodeToCommunity[n.getNodeId()] = n.getNodeId();
         }

@@ -27,23 +27,21 @@ public class Louvain {
         return modularity;
     }
 
-
     public static Partition optimize(Graph graph, Partition communities) {
-
         boolean canimprove = true;
-
         while (canimprove) {
-
             canimprove = false;
 
             for (Node node : graph.getNodes()) {
-
                 int originalCommunity = communities.communityOf(node);
-                double bestModularity = modularityOf(graph, communities);
+
+                communities.removeNodeFromCommunity(node);
+
+                double bestModularityGain = 0.0;
                 int bestCommunity = originalCommunity;
 
                 // collect neighbor communities
-                Set<Integer> neighborCommunities = new HashSet<>();
+                Map<Integer, Double> neighborCommunities = new HashMap<>();
 
                 for (Edge edge : graph.getAdjList().get(node.getNodeId())) {
 
@@ -56,34 +54,26 @@ public class Louvain {
                     } else {
                         neighbor = node1;
                     }
-
-                    neighborCommunities.add(communities.communityOf(neighbor));
+                    int neighborCommunity = communities.communityOf(neighbor);
+                    double currentConnectionWeight = neighborCommunities.getOrDefault(neighborCommunity,0.0);
+                    neighborCommunities.put(neighborCommunity, currentConnectionWeight + edge.getEdgeWeight());
                 }
 
                 // try moving node to each neighbor community
-                for (int candidateCommunity : neighborCommunities) {
+                for (int candidateCommunity : neighborCommunities.keySet()) {
+                    double connectionWeight = neighborCommunities.get(candidateCommunity);
+                    double newModularityGain = communities.computeModularityGain(node,candidateCommunity,connectionWeight);
 
-                    if (candidateCommunity == originalCommunity)
-                        continue;
-
-                    // move node
-                    communities.moveNodeToCommunity(node, candidateCommunity);
-
-                    double newModularity = modularityOf(graph, communities);
-
-                    if (newModularity > bestModularity) {
-                        bestModularity = newModularity;
+                    if (newModularityGain > bestModularityGain) {
+                        bestModularityGain = newModularityGain;
                         bestCommunity = candidateCommunity;
                     }
-
-                    // move back
-                    communities.moveNodeToCommunity(node, originalCommunity);
                 }
 
                 // apply best move
-                if (bestCommunity != originalCommunity) {
+                communities.moveNodeToCommunity(node, bestCommunity);
 
-                    communities.moveNodeToCommunity(node, bestCommunity);
+                if (bestCommunity != originalCommunity) {
                     canimprove = true;
                 }
             }
