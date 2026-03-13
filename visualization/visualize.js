@@ -23,6 +23,7 @@ const draw = (graph)=>{
     const options = {
         nodes: {
             shape: "dot",
+            size:Math.min(1000, graph.nodes.length * 10 / 4),
             font: {
                 size: 0,
             },
@@ -35,11 +36,12 @@ const draw = (graph)=>{
             },
         },
         physics: {
+            enabled:false,
             stabilization: false,
             barnesHut: {
                 gravitationalConstant: -500000,
                 springConstant: 0.001,
-                springLength: 150,
+                springLength: 50,
                 centralGravity:0.3,
             },
         },
