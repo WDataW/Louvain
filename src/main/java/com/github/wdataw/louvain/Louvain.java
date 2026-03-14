@@ -2,12 +2,14 @@ package com.github.wdataw.louvain;
 import com.github.wdataw.louvain.graph.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+
 
 
 public class Louvain {
+
+    //this method is for calculating the modularity Q of a given graph
+
     public static double modularityOf(Graph graph, Partition communities) {
         double m = graph.getGraphWeight();
         double modularity = 0.0;
@@ -27,63 +29,9 @@ public class Louvain {
         return modularity;
     }
 
+    //this method is for optimizing a given graph and returning a new partition with higher modularity
+
     public static Partition optimize(Graph graph, Partition communities) {
-        boolean canimprove = true;
-        while (canimprove) {
-            canimprove = false;
-
-            for (Node node : graph.getNodes()) {
-                int originalCommunity = communities.communityOf(node);
-
-                communities.removeNodeFromCommunity(node);
-
-                double bestModularityGain = 0.0;
-                int bestCommunity = originalCommunity;
-
-                // collect neighbor communities
-                Map<Integer, Double> neighborCommunities = new HashMap<>();
-
-                for (Edge edge : graph.getAdjList().get(node.getNodeId())) {
-
-                    Node node1 = edge.getEndpoints().getNode1();
-                    Node node2 = edge.getEndpoints().getNode2();
-
-                    Node neighbor;
-                    if (node1.equals(node)) {
-                        neighbor = node2;
-                    } else {
-                        neighbor = node1;
-                    }
-                    int neighborCommunity = communities.communityOf(neighbor);
-                    double currentConnectionWeight = neighborCommunities.getOrDefault(neighborCommunity,0.0);
-                    neighborCommunities.put(neighborCommunity, currentConnectionWeight + edge.getEdgeWeight());
-                }
-
-                // try moving node to each neighbor community
-                for (int candidateCommunity : neighborCommunities.keySet()) {
-                    double connectionWeight = neighborCommunities.get(candidateCommunity);
-                    double newModularityGain = communities.computeModularityGain(node,candidateCommunity,connectionWeight);
-
-                    if (newModularityGain > bestModularityGain) {
-                        bestModularityGain = newModularityGain;
-                        bestCommunity = candidateCommunity;
-                    }
-                }
-
-                // apply best move
-                communities.moveNodeToCommunity(node, bestCommunity);
-
-                if (bestCommunity != originalCommunity) {
-                    canimprove = true;
-                }
-            }
-        }
-
-        return communities;
-    }
-
-
-    /*public static Partition optimize(Graph graph, Partition communities) {
 
         boolean improvement = true;
         double m = graph.getGraphWeight();
@@ -105,15 +53,23 @@ public class Louvain {
                     Node n1 = e.getEndpoints().getNode1();
                     Node n2 = e.getEndpoints().getNode2();
 
-                    Node neighbor = n1.equals(node) ? n2 : n1;
+                    Node neighbor;
+
+                    if (n1.equals(node)) {
+                        neighbor = n2;
+                    } else {
+                        neighbor = n1;
+                    }
+
                     int neighborCommunity = communities.communityOf(neighbor);
 
-                    communityWeights.put(
-                            neighborCommunity,
-                            communityWeights.getOrDefault(neighborCommunity, 0.0)
-                                    + e.getEdgeWeight()
-                    );
+                    communityWeights.put(neighborCommunity, communityWeights.getOrDefault(neighborCommunity, 0.0) + e.getEdgeWeight());
                 }
+
+                //weight of edges from node i to its original community
+                double k_i_in_old = communityWeights.getOrDefault(originalCommunity, 0.0);
+
+                double oldSigmaCHat = communities.degreeOfCommunity(originalCommunity);
 
                 int bestCommunity = originalCommunity;
                 double bestGain = 0;
@@ -121,13 +77,12 @@ public class Louvain {
                 for (Map.Entry<Integer, Double> entry : communityWeights.entrySet()) {
 
                     int candidateCommunity = entry.getKey();
+                    //the weight of edges from the node to the new community.
                     double k_i_in = entry.getValue();
 
-                    double sigmaTot = communities.degreeOfCommunity(candidateCommunity);
+                    double newSigmaCHat = communities.degreeOfCommunity(candidateCommunity);
 
-                    double gain =
-                            (k_i_in / (2 * m)) -
-                                    (nodeDegree * sigmaTot) / ((2 * m) * (2 * m));
+                    double gain = (k_i_in / m) - (nodeDegree * newSigmaCHat) / (2 * m * m) - (k_i_in_old / m) + (nodeDegree * oldSigmaCHat) / (2 * m * m);
 
                     if (gain > bestGain) {
                         bestGain = gain;
@@ -144,5 +99,8 @@ public class Louvain {
         }
 
         return communities;
-    }*/
+    }
+
+
+
 }
