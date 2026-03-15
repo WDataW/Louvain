@@ -10,7 +10,7 @@ export default function LandingPage({ className = "", children, ...props }) {
                     <GraphCard dirName="/video-example" edges={7} nodes={12} image={"/assets/images/smallGraph.png"} title={"Small Graph"}></GraphCard>
                 </li>
                 <li>
-                    <GraphCard dirName="/email-eu" edges={1005} nodes={25571} image={"/assets/images/mediumGraph.png"} title={"Medium Graph"}></GraphCard>
+                    <GraphCard dirName="/email-eu" edges={25571} nodes={1005} image={"/assets/images/mediumGraph.png"} title={"Medium Graph"}></GraphCard>
 
                 </li>
                 <li>
