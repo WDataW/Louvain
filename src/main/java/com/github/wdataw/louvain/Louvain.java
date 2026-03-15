@@ -1,13 +1,33 @@
 package com.github.wdataw.louvain;
 import com.github.wdataw.louvain.graph.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class Louvain {
+    public static List<Map<Integer,Set<Integer>>> louvain(Graph graph, String directory){
+        List<Map<Integer,Set<Integer>>> dendogram = new ArrayList<>();
+
+        boolean canImprove = true;
+        int level = 0;
+        while(canImprove){
+            canImprove = false;
+
+            Partition initialCommunities = new Partition(graph);// initialize communities;
+            JSONExporter.toJSON(graph,initialCommunities,String.format("visualization/public/%s/initialGraph%d.json",directory, level));// for visualization
+
+            Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
+            JSONExporter.toJSON(graph,optimizedCommunities,String.format("visualization/public/%s/optimizedGraph%d.json",directory, level));// for visualization
+
+            dendogram.add(mapSuperNodetoNodes(graph,optimizedCommunities));
+            Graph aggregatedGraph = aggregate(graph, optimizedCommunities);
+            if(aggregatedGraph.getSize() < graph.getSize())canImprove=true;
+            graph = aggregatedGraph;
+            level++;
+        }
+        return dendogram;
+    }
+
     public static double modularityOf(Graph graph, Partition communities) {
         double m = graph.getGraphWeight();
         double modularity = 0.0;
@@ -25,6 +45,73 @@ public class Louvain {
             modularity += (1 / twoM) * (sigmaC - (sigmaCHat * sigmaCHat) / twoM);
         }
         return modularity;
+    }
+    public static Graph aggregate(Graph graph, Partition communities){
+        List<Edge> edges = graph.getEdges();
+        Graph aggregatedGraph = new Graph();
+
+        int idCounter = 0;
+        Map<Integer,Node> communityToSuperNode = new HashMap<>();
+        for(int i=0;i<graph.getSize();i++){
+            if(communities.sizeOf(i)==0)continue;// if the community is not empty then it is converted to a super vertex
+            Node superNode = new Node(idCounter++);
+            aggregatedGraph.addNode(superNode);
+            communityToSuperNode.put(i,superNode);
+
+            double communityWeight = communities.weightOfCommunity(i);// internal weight is collapsed into a self-loop for the super vertex
+            if(communityWeight > 0)aggregatedGraph.addEdge(new Edge(superNode,superNode, communityWeight));
+        }
+
+        Map<String,Edge> superConnections = new HashMap<>();
+        for(Edge e: edges){
+            Node node1 = e.getEndpoints().getNode1();
+            int community1 = communities.communityOf(node1);
+
+            Node node2 = e.getEndpoints().getNode2();
+            int community2 = communities.communityOf(node2);
+
+            if(community1 == community2)continue; // already converted into a self-loop, don't convert to edge between super nodes
+
+            int a = Math.min(community1,community2);
+            int b = Math.max(community1,community2);
+            String connection = a+"C"+b;
+
+            Edge edgeBetweenSuperNodes = superConnections.get(connection);
+            if(edgeBetweenSuperNodes==null){
+                Node superNode1 = communityToSuperNode.get(community1);
+                Node superNode2 = communityToSuperNode.get(community2);
+                edgeBetweenSuperNodes = new Edge(superNode1,superNode2, e.getEdgeWeight());
+                aggregatedGraph.addEdge(edgeBetweenSuperNodes);
+                superConnections.put(connection, edgeBetweenSuperNodes);
+            }else{
+                double newWeight = edgeBetweenSuperNodes.getEdgeWeight() + e.getEdgeWeight();
+                edgeBetweenSuperNodes.setEdgeWeight(newWeight);
+            }
+        }
+        aggregatedGraph.updateAdjList();
+        aggregatedGraph.updateGraphWeight();
+        return aggregatedGraph;
+    }
+    private static Map<Integer,Set<Integer>> mapSuperNodetoNodes(Graph graph, Partition communities){
+        Map<Integer, Integer> communityToSuperNode = new HashMap<>();
+
+        int superNodeIndex = 0;
+        for(int i=0 ;i<communities.getNodeToCommunity().length;i++){
+            if(communities.getCommunitySizes()[i]==0)continue;// empty communities don't result in a super node
+
+            communityToSuperNode.put(i, superNodeIndex++);
+//          reasoning: communities are aggregated into super nodes, but ids reset in the next level of aggregation, e.g. community at index 17 could become super node at index 0 if the previous 16 communities are empty
+        }
+
+        Map<Integer,Set<Integer>> map = new HashMap<>();
+        for(Node n: graph.getNodes()){
+            int community = communities.communityOf(n);
+            int superNodeId = communityToSuperNode.get(community);
+            Set<Integer> nodes = map.getOrDefault(superNodeId, new HashSet<Integer>());
+            nodes.add(n.getNodeId());
+            map.put(superNodeId, nodes);
+        }
+        return map;
     }
 
     public static Partition optimize(Graph graph, Partition communities) {
@@ -48,28 +135,23 @@ public class Louvain {
                     Node node1 = edge.getEndpoints().getNode1();
                     Node node2 = edge.getEndpoints().getNode2();
 
-                    Node neighbor;
-                    if (node1.equals(node)) {
-                        neighbor = node2;
-                    } else {
-                        neighbor = node1;
-                    }
+                    Node neighbor = node1.equals(node) ? node2 : node1;
+                    if (neighbor.equals(node)) continue; // skip self-loops
                     int neighborCommunity = communities.communityOf(neighbor);
-                    double currentConnectionWeight = neighborCommunities.getOrDefault(neighborCommunity,0.0);
+                    double currentConnectionWeight = neighborCommunities.getOrDefault(neighborCommunity, 0.0);
                     neighborCommunities.put(neighborCommunity, currentConnectionWeight + edge.getEdgeWeight());
                 }
 
                 // try moving node to each neighbor community
                 for (int candidateCommunity : neighborCommunities.keySet()) {
                     double connectionWeight = neighborCommunities.get(candidateCommunity);
-                    double newModularityGain = communities.computeModularityGain(node,candidateCommunity,connectionWeight);
+                    double newModularityGain = communities.computeModularityGain(node, candidateCommunity, connectionWeight);
 
                     if (newModularityGain > bestModularityGain) {
                         bestModularityGain = newModularityGain;
                         bestCommunity = candidateCommunity;
                     }
                 }
-
                 // apply best move
                 communities.moveNodeToCommunity(node, bestCommunity);
 
@@ -81,68 +163,4 @@ public class Louvain {
 
         return communities;
     }
-
-
-    /*public static Partition optimize(Graph graph, Partition communities) {
-
-        boolean improvement = true;
-        double m = graph.getGraphWeight();
-
-        while (improvement) {
-
-            improvement = false;
-
-            for (Node node : graph.getNodes()) {
-
-                int nodeId = node.getNodeId();
-                int originalCommunity = communities.communityOf(node);
-                double nodeDegree = communities.degreeOfNode(node);
-
-                Map<Integer, Double> communityWeights = new HashMap<>();
-
-                for (Edge e : graph.getAdjList().get(nodeId)) {
-
-                    Node n1 = e.getEndpoints().getNode1();
-                    Node n2 = e.getEndpoints().getNode2();
-
-                    Node neighbor = n1.equals(node) ? n2 : n1;
-                    int neighborCommunity = communities.communityOf(neighbor);
-
-                    communityWeights.put(
-                            neighborCommunity,
-                            communityWeights.getOrDefault(neighborCommunity, 0.0)
-                                    + e.getEdgeWeight()
-                    );
-                }
-
-                int bestCommunity = originalCommunity;
-                double bestGain = 0;
-
-                for (Map.Entry<Integer, Double> entry : communityWeights.entrySet()) {
-
-                    int candidateCommunity = entry.getKey();
-                    double k_i_in = entry.getValue();
-
-                    double sigmaTot = communities.degreeOfCommunity(candidateCommunity);
-
-                    double gain =
-                            (k_i_in / (2 * m)) -
-                                    (nodeDegree * sigmaTot) / ((2 * m) * (2 * m));
-
-                    if (gain > bestGain) {
-                        bestGain = gain;
-                        bestCommunity = candidateCommunity;
-                    }
-                }
-
-                if (bestCommunity != originalCommunity) {
-
-                    communities.moveNodeToCommunity(node, bestCommunity);
-                    improvement = true;
-                }
-            }
-        }
-
-        return communities;
-    }*/
 }

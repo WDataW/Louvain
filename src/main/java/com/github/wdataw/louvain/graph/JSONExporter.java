@@ -8,6 +8,7 @@
     import org.openide.util.Lookup;
 
     import java.awt.geom.Point2D;
+    import java.io.File;
     import java.io.FileNotFoundException;
     import java.io.PrintWriter;
     import java.util.HashMap;
@@ -51,12 +52,12 @@
             fa2.initAlgo();
             fa2.resetPropertiesValues();
             fa2.setBarnesHutOptimize(true);
-            fa2.setBarnesHutTheta(1.2);
+            fa2.setBarnesHutTheta(1.5);
             fa2.setLinLogMode(true);
-            fa2.setScalingRatio(10.0);
-            fa2.setGravity(0.5);
+            fa2.setScalingRatio(8.0);
+            fa2.setGravity(0.8);
 
-            int iterations = Math.min(1000, n * 2);
+            int iterations = Math.min(3000, n * 2);
             for (int i = 0; i < iterations; i++) {
                 fa2.goAlgo();
             }
@@ -74,10 +75,12 @@
             return String.valueOf(i);
         }
 
-        public static void toJSON(Graph graph, Partition communities, String destination){
+        public static void toJSON(Graph graph, Partition communities, String filePath){
+            File file = new File(filePath);
+            file.getParentFile().mkdirs();
             PrintWriter jsonFile = null;
             try{
-                jsonFile = new PrintWriter(destination);
+                jsonFile = new PrintWriter(file);
             }catch (FileNotFoundException e){
                 System.out.println(e.getMessage());
                 System.exit(0);
