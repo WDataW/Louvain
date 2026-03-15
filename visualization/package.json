@@ -5,7 +5,6 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "visualize.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,10 +12,16 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router": "^7.13.1",
+    "tailwindcss": "^4.2.1",
     "vis-data": "^8.0.3",
     "vis-network": "^10.0.2"
   },
   "devDependencies": {
-    "vite": "^7.3.1"
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.0"
   }
 }
