@@ -22,15 +22,19 @@ const draw = (graph)=>{
     }
     const options = {
         nodes: {
-            shape: "dot",
-            size:Math.min(1000, graph.nodes.length * 10 / 4),
+            margin:15,
+            borderWidth:2,
+            color:{
+                border:"#ffffff",
+                background:"black"
+            },
+            shape: "ellipse",
             font: {
-                size: 0,
+                size: 4* Math.sqrt(graph.nodes.length)   ,
             },
         },
         edges: {
-            width: 0.15,
-            color: { inherit: "from" },
+            width: 2,
             smooth: {
                 type: "continuous",
             },
@@ -38,12 +42,6 @@ const draw = (graph)=>{
         physics: {
             enabled:false,
             stabilization: false,
-            barnesHut: {
-                gravitationalConstant: -500000,
-                springConstant: 0.001,
-                springLength: 50,
-                centralGravity:0.3,
-            },
         },
         interaction: {
             tooltipDelay: 200,
@@ -65,4 +63,4 @@ const display = async (url)=> {
     const graph = await resposnse.json();
     draw(graph);
 }
-display("/initialGraph.json");
+display("/Gnutella05/optimizedGraph5.json");

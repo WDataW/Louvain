@@ -13,15 +13,15 @@ public class Graph {
     private final int graphID;
     // a list of all graph edges / a list of all graph nodes
     private List<Edge> edges = new ArrayList<Edge>();
-    private HashSet<Integer> edgeIds = new HashSet<Integer>();
+    private Map<Integer, Edge> idToEdge = new HashMap<>();
     private List<Node> nodes = new ArrayList<Node>();
-    private HashSet<Integer> nodeIds = new HashSet<Integer>();
+    private Map<Integer, Node> idToNode = new HashMap<>();
 
     // an adjacency list structure to represent the graph
     private Map<Integer, List<Edge>> adjList = new HashMap<>();
 
     // constructors
-    Graph(List<Edge> edges, List<Node> nodes){
+    public Graph(List<Edge> edges, List<Node> nodes){
         graphID = ++idCounter;
         this.edges = new ArrayList<Edge>(edges);
         this.nodes = new ArrayList<Node>(nodes);
@@ -30,7 +30,7 @@ public class Graph {
         this.size = this.nodes.size();
 
     }
-    Graph(){
+    public Graph(){
         graphID = ++idCounter;
         this.edges = new ArrayList<Edge>();
         this.nodes = new ArrayList<Node>();
@@ -64,10 +64,7 @@ public class Graph {
     }
     // testing only - KEY REMOVE
     public Node getNodeByID(int nodeID){
-        for(Node n:this.nodes){
-            if(n.getNodeId() == nodeID)return n;
-        }
-        return null;
+        return idToNode.get(nodeID);
     }
 
     // setters
@@ -78,20 +75,20 @@ public class Graph {
         this.nodes = nodes;
     }
     public void addNode(Node newNode){
-        if(this.nodeIds.contains(newNode.getNodeId()))return;// if node already exists, don't add it
-        this.nodeIds.add(newNode.getNodeId());
-        this.nodes.add(newNode);
-        this.size++;
+        if(idToNode.containsKey(newNode.getNodeId()))return;// if node already exists, don't add it
+        idToNode.put(newNode.getNodeId(), newNode);
+        nodes.add(newNode);
+        size++;
     }
     public void addEdge(Edge newEdge){
-        if(this.edgeIds.contains(newEdge.getEdgeID()))return;// if edge already exists, don't add it
-        this.edgeIds.add(newEdge.getEdgeID());
-        this.edges.add(newEdge);
+        if(idToEdge.containsKey(newEdge.getEdgeID()))return;// if edge already exists, don't add it
+        idToEdge.put(newEdge.getEdgeID(),newEdge);
+        edges.add(newEdge);
     }
     public void updateAdjList(){
         this.adjList = toAdjList(this.edges,this.nodes);
     }
-    private void updateGraphWeight(){
+    public void updateGraphWeight(){
         this.weight = getGraphWeight();
     }
     // methods
@@ -136,7 +133,6 @@ public double getGraphWeight() { // m
             Node node2 =  e.getEndpoints().getNode2();
             List<Edge> incidentOnNode2 = adjList.get(node2.getNodeId());// edges incident on node2
             if(!incidentOnNode2.contains(e))incidentOnNode2.add(e);// if the edge doesn't already exist in incidentOnNode2 then add it there.
-
         }
         return adjList;
     }

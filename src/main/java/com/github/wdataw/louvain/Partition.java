@@ -11,6 +11,7 @@ public class Partition {
     private final double[] nodeToDegree;// maps each node to its degree
     private final double[] communityWeightSum;// Sigma C
     private final double[] communityDegreeSum;// Sigma C hat
+    private final int[] communitySizes;// Sigma C hat
     private final Graph graph;
 
     Partition(Graph graph){
@@ -19,6 +20,7 @@ public class Partition {
         this.nodeToDegree = initDegrees(graph);
         this.communityWeightSum = initCommunityWeights(graph);
         this.communityDegreeSum = initCommunityDegrees(graph);
+        this.communitySizes = initCommunitySizes();
     }
     public double computeModularityGain(Node node, int destinationCommunity, double connectionWeight ){
         return connectionWeight
@@ -27,6 +29,12 @@ public class Partition {
     }
     public void removeNodeFromCommunity(Node node){
         moveNodeToCommunity(node, graph.getSize());// last index is reserved for temporary community swappings
+    }
+
+    private int[] initCommunitySizes(){
+        int[] sizes = new int[graph.getSize() + 1];
+        Arrays.fill(sizes, 1);
+        return sizes;
     }
 
     /*this method is for calculating the sigma C hat
@@ -81,11 +89,17 @@ public class Partition {
         int nodeId = nodeToMove.getNodeId();
         updateCommunityDegree(nodeId, newCommunity);// update degrees of involved communities
         updateCommunityWeight(nodeId, newCommunity);// update weights of involved communities
+        updateCommunitySize(nodeId, newCommunity);
         nodeToCommunity[nodeId] = newCommunity;// update node community mapping
     }
     
     
-    
+    private void updateCommunitySize(int nodeId, int newCommunity){
+        int originalCommunity = communityOf(nodeId);
+        communitySizes[originalCommunity]--;
+        communitySizes[newCommunity]++;
+    }
+
     // NOTE: only invoke before actually moving the node to a new community
     // used to update the weights of communities that are involved in a node move (when the node moves from one community to another).
     private void updateCommunityWeight(int nodeId, int newCommunity){
@@ -160,7 +174,9 @@ public class Partition {
         return Objects.deepEquals(nodeToCommunity, partition.nodeToCommunity);
     }
 
-
+    public int sizeOf(int communityIndex){
+        return communitySizes[communityIndex];
+    }
     public int communityOf(Node node){// takes a node and returns the community containing the node
         return this.nodeToCommunity[node.getNodeId()];
     }
@@ -179,6 +195,15 @@ public class Partition {
     public double weightOfCommunity(int communityIndex){// takes a community index and returns the internal weight of the community
         return this.communityWeightSum[communityIndex];
     }
+    public int countOfCommunities(){
+        int countOfCommunities = 0;
+        for(double s: communitySizes){
+            if(s==0)continue;// community is empty
+            countOfCommunities++;
+        }
+        return countOfCommunities;
+    }
+
     public int[] getNodeToCommunity() {
         return nodeToCommunity;
     }
@@ -191,5 +216,8 @@ public class Partition {
 
     public double[] getCommunityDegreeSum() {
         return communityDegreeSum;
+    }
+    public int[] getCommunitySizes(){
+        return communitySizes;
     }
 }

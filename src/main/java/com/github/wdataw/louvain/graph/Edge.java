@@ -14,20 +14,20 @@ public class Edge {
     private Endpoints endpoints;
 
     // constructors
-    public Edge(Endpoints endpoints ,float edgeWeight) {
+    public Edge(Endpoints endpoints ,double edgeWeight) {
         this.edgeWeight = edgeWeight;
         this.endpoints = new Endpoints(endpoints.getNode1(), endpoints.getNode2());
         this.edgeID = idCounter++;
     }
-    public Edge(Node node1, Node node2 ,float EdgeWeight) {
+    public Edge(Node node1, Node node2 ,double EdgeWeight) {
         this.edgeWeight = EdgeWeight;
         this.endpoints = new Endpoints(node1,node2);
         this.edgeID = idCounter++;
     }
 
     // setters
-    public void setEdgeWeight(float EdgeWeight) {
-        this.edgeWeight = EdgeWeight;
+    public void setEdgeWeight(double edgeWeight) {
+        this.edgeWeight = edgeWeight;
     }
     public void setEndpoints(Endpoints endpoints){
         this.endpoints.setNode1(endpoints.getNode1());
