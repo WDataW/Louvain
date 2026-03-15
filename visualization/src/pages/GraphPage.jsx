@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { draw } from "../utils/visualize";
 import { NavLink, useParams } from "react-router";
-
+import xIcon from '../assets/icons/x.svg';
 let once = true;
 export default function GraphPage({ className = "", children, ...props }) {
     const { dirName } = useParams();
@@ -52,9 +52,9 @@ export default function GraphPage({ className = "", children, ...props }) {
                 <h1 className="p-[0.5rem]">{titles[index]}</h1>
                 <button disabled={index == graphs.length - 1} className={`p-[0.5rem] ${index == graphs.length - 1 && 'opacity-30'}`} onClick={() => setIndex(i => Math.min(i + 1, graphs.length - 1))}>{"▶"}</button>
             </div>
-            <div className="absolute  z-1 right-[0.5rem] text-[1.7rem] text-red-500 text-bold">
-                <NavLink className={'block p-[0.5rem] font-mono'} to={'/'}>
-                    X
+            <div className="absolute  z-1 right-0 text-[1.7rem] text-red-500 text-bold">
+                <NavLink className={'block  p-[1rem] '} to={'/'}>
+                    <img className="h-[1rem] w-[1rem] object-cover" src={xIcon} alt="exit" />
                 </NavLink>
             </div>
             {!graphs[index] && <div className="absolute top-[50%] w-full text-center -y-translate-1/2 -x-translate-1/2">LOADING...</div>}
