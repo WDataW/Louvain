@@ -14,10 +14,14 @@ public class Louvain {
             canImprove = false;
 
             Partition initialCommunities = new Partition(graph);// initialize communities;
+
             JSONExporter.toJSON(graph,initialCommunities,String.format("visualization/public/%s/initialGraph%d.json",directory, level));// for visualization
+            System.out.println(String.format("Exported initialGraph%d.json",level));
 
             Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
+
             JSONExporter.toJSON(graph,optimizedCommunities,String.format("visualization/public/%s/optimizedGraph%d.json",directory, level));// for visualization
+            System.out.println(String.format("Exported optimizedGraph%d.json",level));
 
             dendogram.add(mapSuperNodetoNodes(graph,optimizedCommunities));
             Graph aggregatedGraph = aggregate(graph, optimizedCommunities);
