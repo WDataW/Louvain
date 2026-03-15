@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { draw } from "../../visualize";
+import { draw } from "../utils/visualize";
 import { NavLink, useParams } from "react-router";
 
 let once = true;
@@ -18,12 +18,12 @@ export default function GraphPage({ className = "", children, ...props }) {
                 if (!response1.ok) throw new Error("Fetching done");
                 const initialGraph = await response1.json();
                 tempGraphs.push(initialGraph);
-                tempTitles.push(`Level ${i}: Initial State`);
+                tempTitles.push(`Level ${i}: Initial`);
 
                 const response2 = await fetch(`/${dirName}/optimizedGraph${i}.json`);
                 const optimizedGraph = await response2.json();
                 tempGraphs.push(optimizedGraph);
-                tempTitles.push(`Level ${i}: Final State`);
+                tempTitles.push(`Level ${i}: Final`);
                 i++;
             } catch (error) {
                 console.log(error.message);
@@ -47,14 +47,14 @@ export default function GraphPage({ className = "", children, ...props }) {
     }, [index]);
     return (
         <div className="relative">
-            <div className="px-[2rem] flex justify-around text-[1.3rem] w-full z-1 absolute top-[1.5rem] leading-0">
-                <button onClick={() => setIndex(i => Math.max(i - 1, 0))}>{"◀"}</button>
-                <h1>{titles[index]}</h1>
-                <button onClick={() => setIndex(i => Math.min(i + 1, graphs.length - 1))}>{"▶"}</button>
+            <div className="px-[3rem] flex justify-around text-[1.3rem] w-full z-1 absolute bottom-[2rem] ">
+                <button disabled={index == 0} className={`p-[0.5rem] ${index == 0 && 'opacity-30'}`} onClick={() => setIndex(i => Math.max(i - 1, 0))}>{"◀"}</button>
+                <h1 className="p-[0.5rem]">{titles[index]}</h1>
+                <button disabled={index == graphs.length - 1} className={`p-[0.5rem] ${index == graphs.length - 1 && 'opacity-30'}`} onClick={() => setIndex(i => Math.min(i + 1, graphs.length - 1))}>{"▶"}</button>
             </div>
-            <div className="absolute top-[0.7rem] z-1 right-[1.5rem] text-red-500 text-bold">
-                <NavLink to={'/'}>
-                    EXIT
+            <div className="absolute  z-1 right-[0.5rem] text-[1.7rem] text-red-500 text-bold">
+                <NavLink className={'block p-[0.5rem] font-mono'} to={'/'}>
+                    X
                 </NavLink>
             </div>
             {!graphs[index] && <div className="absolute top-[50%] w-full text-center -y-translate-1/2 -x-translate-1/2">LOADING...</div>}

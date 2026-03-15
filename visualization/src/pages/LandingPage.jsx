@@ -2,7 +2,7 @@ import GraphCard from "../components/GraphCard";
 
 export default function LandingPage({ className = "", children, ...props }) {
     return (
-        <div className={`px-[4rem] py-[2rem] h-full min-h-[100vh] w-full ${className}`} {...props}>
+        <div className={`px-[2rem] sm:px-[4rem] py-[2rem] h-full min-h-[100vh] w-full ${className}`} {...props}>
             <h1 className="text-[1.5rem]">Graph-Based Community Detection Using Louvain Algorithm</h1>
             <hr className="mb-[2rem]" />
             <ul className="grid gap-[1rem] grid-cols-[repeat(auto-fit,minmax(10rem,1fr))]">
