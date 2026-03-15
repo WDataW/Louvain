@@ -57,7 +57,7 @@
             fa2.setScalingRatio(8.0);
             fa2.setGravity(0.8);
 
-            int iterations = Math.min(3000, n * 2);
+            int iterations = Math.min(1000, n * 2);
             for (int i = 0; i < iterations; i++) {
                 fa2.goAlgo();
             }

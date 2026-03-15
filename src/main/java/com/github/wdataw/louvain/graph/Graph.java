@@ -168,6 +168,7 @@ public double getGraphWeight() { // m
         }
         newGraph.updateAdjList();// adjList is created when the object is created, then updated when we're done inserting nodes and edges
        newGraph.updateGraphWeight();
+       System.out.println("Graph read succesfully.");
        return newGraph;
     }
 }
