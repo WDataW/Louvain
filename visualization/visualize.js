@@ -1,5 +1,5 @@
-import {Network} from 'vis-network';
-import {DataSet} from 'vis-data';
+import { Network } from 'vis-network';
+import { DataSet } from 'vis-data';
 
 // converts JSON nodes to dataset nodes
 const getNodes = (graph) => {
@@ -12,8 +12,9 @@ const getEdges = (graph) => {
 }
 
 // draws the graph
-const draw = (graph)=>{
+export const draw = (graph) => {
     // contains the canva
+    if (!graph) return;
     const container = document.getElementById("network");
 
     const data = {
@@ -22,15 +23,15 @@ const draw = (graph)=>{
     }
     const options = {
         nodes: {
-            margin:15,
-            borderWidth:2,
-            color:{
-                border:"#ffffff",
-                background:"black"
+            margin: 15,
+            borderWidth: 2,
+            color: {
+                border: "#ffffff",
+                background: "black"
             },
             shape: "ellipse",
             font: {
-                size: 4* Math.sqrt(graph.nodes.length)   ,
+                size: 4 * Math.sqrt(graph.nodes.length),
             },
         },
         edges: {
@@ -40,7 +41,7 @@ const draw = (graph)=>{
             },
         },
         physics: {
-            enabled:false,
+            enabled: false,
             stabilization: false,
         },
         interaction: {
@@ -49,18 +50,19 @@ const draw = (graph)=>{
         }
     };
 
-    const network = new Network(container,data,options);
+    const network = new Network(container, data, options);
 
-    setTimeout(()=>{// stop moving after 15 seconds
-        network.setOptions({physics:{
-            enabled:false
-            }});
-    },15000)
+    setTimeout(() => {// stop moving after 15 seconds
+        network.setOptions({
+            physics: {
+                enabled: false
+            }
+        });
+    }, 15000)
 }
-const display = async (url)=> {
+const display = async (url) => {
     const resposnse = await fetch(url);
-    if(!resposnse.ok)return;
+    if (!resposnse.ok) return;
     const graph = await resposnse.json();
     draw(graph);
 }
-display("/Gnutella05/optimizedGraph5.json");
