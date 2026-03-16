@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { draw } from "../utils/visualize";
 import { NavLink, useParams } from "react-router";
 import xIcon from '../assets/icons/x.svg';
-let once = true;
+import arrowIcon from '../assets/icons/arrow.svg';
 export default function GraphPage({ className = "", children, ...props }) {
     const { dirName } = useParams();
     const [graphs, setGraphs] = useState([]);
@@ -48,9 +48,13 @@ export default function GraphPage({ className = "", children, ...props }) {
     return (
         <div className="relative">
             <div className="px-[3rem] flex justify-around text-[1.3rem] w-full z-1 absolute bottom-[2rem] ">
-                <button disabled={index == 0} className={`p-[0.5rem] ${index == 0 && 'opacity-30'}`} onClick={() => setIndex(i => Math.max(i - 1, 0))}>{"◀"}</button>
-                <h1 className="p-[0.5rem]">{titles[index]}</h1>
-                <button disabled={index == graphs.length - 1} className={`p-[0.5rem] ${index == graphs.length - 1 && 'opacity-30'}`} onClick={() => setIndex(i => Math.min(i + 1, graphs.length - 1))}>{"▶"}</button>
+                <button disabled={index == 0} className={`flex items-center justify-center h-[3rem] w-[3rem]  p-[0.5rem]  ${index == 0 && 'opacity-30'}`} onClick={() => setIndex(i => Math.max(i - 1, 0))}>
+                    <img src={arrowIcon} alt={'next'} className={"h-3/4 object-cover"}/>
+                </button>
+                <h1 className="text-center p-[0.5rem]">{titles[index]}</h1>
+                <button disabled={index == graphs.length - 1} className={`flex items-center justify-center h-[3rem] w-[3rem]  p-[0.5rem] ${index == graphs.length - 1 && 'opacity-30'}`} onClick={() => setIndex(i => Math.min(i + 1, graphs.length - 1))}>
+                    <img src={arrowIcon} alt={'next'} className={"h-3/4 object-cover rotate-180"}/>
+                </button>
             </div>
             <div className="absolute  z-1 right-0 text-[1.7rem] text-red-500 text-bold">
                 <NavLink className={'block  p-[1rem] '} to={'/'}>
@@ -59,7 +63,6 @@ export default function GraphPage({ className = "", children, ...props }) {
             </div>
             {!graphs[index] && <div className="absolute top-[50%] w-full text-center -y-translate-1/2 -x-translate-1/2">LOADING...</div>}
             <div id="network" className={`${className}`} {...props}>
-
             </div>
         </div>
     );
