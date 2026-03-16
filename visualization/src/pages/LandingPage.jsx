@@ -5,7 +5,7 @@ export default function LandingPage({ className = "", children, ...props }) {
         {
             dirName: "/video-example",
             edges: 12,
-            nodes: 7,
+            nodes: 9,
             image: "/assets/images/exampleGraph.png",
             title: "Example Graph",
             source: "https://youtu.be/Xt0vBtBY2BU?si=hA_cAw5-2F8XhbVC&t=2327"

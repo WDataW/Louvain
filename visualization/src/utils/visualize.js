@@ -52,13 +52,6 @@ export const draw = (graph) => {
 
     const network = new Network(container, data, options);
 
-    setTimeout(() => {// stop moving after 15 seconds
-        network.setOptions({
-            physics: {
-                enabled: false
-            }
-        });
-    }, 15000)
 }
 const display = async (url) => {
     const resposnse = await fetch(url);
