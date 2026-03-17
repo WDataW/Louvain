@@ -11,12 +11,12 @@ export default function LandingPage({ className = "", children, ...props }) {
             source: "https://youtu.be/Xt0vBtBY2BU?si=hA_cAw5-2F8XhbVC&t=2327"
         },
         {
-            dirName: "/email-eu",
-            edges: 25571,
-            nodes: 1005,
-            image: "/assets/images/emailEU.png",
-            title: "email-Eu-core network",
-            source: "https://snap.stanford.edu/data/email-Eu-core.html"
+            dirName: "/hamsterfriendships",
+            edges: 12534,
+            nodes: 1858,
+            image: "/assets/images/hamstrer.png",
+            title: "Hamsterster friendships",
+            source: "http://konect.cc/networks/petster-friendships-hamster/"
         },
         {
             dirName: "/facebook",
@@ -27,12 +27,12 @@ export default function LandingPage({ className = "", children, ...props }) {
             source: "https://snap.stanford.edu/data/ego-Facebook.html"
         },
         {
-            dirName: "/Gnutella05",
-            edges: 31839,
-            nodes: 8846,
-            image: "/assets/images/Gnutella05.png",
-            title: "Gnutella peer-to-peer network, August 5 2002",
-            source: "https://snap.stanford.edu/data/p2p-Gnutella05.html"
+            dirName: "/biogridthaliana",
+            edges: 47916,
+            nodes: 10417,
+            image: "/assets/images/thalina.png",
+            title: "Biogrid: Arabidopsis Thaliana Columbia",
+            source: "https://github.com/microgravitas/network-corpus/blob/master/networks/BioGrid-Arabidopsis-Thaliana-Columbia.info"
         },
         {
             dirName: "/deezer-europe",
@@ -42,14 +42,14 @@ export default function LandingPage({ className = "", children, ...props }) {
             title: "Deezer Europe Social Network",
             source: "https://snap.stanford.edu/data/feather-deezer-social.html"
         },
-        {
-            dirName: "/Gnutella31",
-            edges: 147892,
-            nodes: 62586,
-            image: "/assets/images/Gnutella02.png",
-            title: "Gnutella peer-to-peer network, August 31 2002",
-            source: "https://snap.stanford.edu/data/p2p-Gnutella31.html"
-        },
+        // {
+        //     dirName: "/Gnutella31",
+        //     edges: 147892,
+        //     nodes: 62586,
+        //     image: "/assets/images/Gnutella02.png",
+        //     title: "Gnutella peer-to-peer network, August 31 2002",
+        //     source: "https://snap.stanford.edu/data/p2p-Gnutella31.html"
+        // },
 
     ]
     return (
