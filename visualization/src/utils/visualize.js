@@ -3,14 +3,24 @@ import { DataSet } from 'vis-data';
 
 // converts JSON nodes to dataset nodes
 const getNodes = (graph) => {
-    return new DataSet(graph.nodes);
+    return new DataSet(graph.nodes.filter((n)=>!n.disconnected));
 }
 
 // converts JSON edges to dataset edges
 const getEdges = (graph) => {
-    return new DataSet(graph.edges);
+    const connectedIds = getConnectedIds(graph);
+    return new DataSet(graph.edges.filter((e)=>{
+        return connectedIds.has(e.from) && connectedIds.has(e.to);
+    }));
 }
-
+const getConnectedIds = (graph)=>{
+    const nodes = graph.nodes;
+    const connectedIds = new Set();
+    for(let n of nodes){
+        if(!n.disconnected)connectedIds.add(n.id);
+    }
+    return connectedIds;
+}
 // draws the graph
 export const draw = (graph, setRendering) => {
     // contains the canva
@@ -23,7 +33,7 @@ export const draw = (graph, setRendering) => {
     }
     const options = {
         nodes: {
-            margin: 15,
+            margin: 50,
             borderWidth: 2,
             color: {
                 border: "#ffffff",

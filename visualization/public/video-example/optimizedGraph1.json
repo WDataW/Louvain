@@ -1,8 +1,8 @@
 {
 "nodes":[
-{"id":0,"label":"0","group":1,"x":349.724640,"y":-244.672806},
-{"id":1,"label":"1","group":1,"x":50.624146,"y":73.463081},
-{"id":2,"label":"2","group":2,"x":-106.510048,"y":-402.089325}
+{"id":0,"label":"0","group":1,"x":-14.285533,"y":-336.001770,"disconnected":false},
+{"id":1,"label":"1","group":1,"x":-131.415237,"y":-334.792053,"disconnected":false},
+{"id":2,"label":"2","group":2,"x":354.875061,"y":-408.272797,"disconnected":false}
 ],
 "edges":[
 {"from":0,"to":0},

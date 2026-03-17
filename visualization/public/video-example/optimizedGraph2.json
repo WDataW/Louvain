@@ -1,7 +1,7 @@
 {
 "nodes":[
-{"id":0,"label":"0","group":0,"x":-182.880630,"y":-398.104431},
-{"id":1,"label":"1","group":1,"x":465.141357,"y":-402.410065}
+{"id":0,"label":"0","group":0,"x":-339.114624,"y":-391.250122,"disconnected":false},
+{"id":1,"label":"1","group":1,"x":97.594566,"y":-423.476440,"disconnected":false}
 ],
 "edges":[
 {"from":0,"to":0},
