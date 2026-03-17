@@ -2,7 +2,6 @@
 
 @layer components {
     #network {
-        background: black;
         border: 1px solid black;
         width: 100vw;
         height: 100dvh;
@@ -10,6 +9,7 @@
 
     html,
     body {
+        background: black;
         color: white;
         margin: 0;
         padding: 0;

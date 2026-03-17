@@ -12,7 +12,7 @@ const getEdges = (graph) => {
 }
 
 // draws the graph
-export const draw = (graph) => {
+export const draw = (graph, setRendering) => {
     // contains the canva
     if (!graph) return;
     const container = document.getElementById("network");
@@ -51,6 +51,9 @@ export const draw = (graph) => {
     };
 
     const network = new Network(container, data, options);
+    network.once("afterDrawing", () => {
+        setRendering(false);
+    })
 
 }
 const display = async (url) => {

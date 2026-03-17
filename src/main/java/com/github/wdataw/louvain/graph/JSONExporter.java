@@ -57,7 +57,7 @@
             fa2.setScalingRatio(8.0);
             fa2.setGravity(0.8);
 
-            int iterations = Math.min(1000, n * 2);
+            int iterations = Math.min(2000, n * 2);
             for (int i = 0; i < iterations; i++) {
                 fa2.goAlgo();
             }
@@ -75,41 +75,46 @@
             return String.valueOf(i);
         }
 
-        public static void toJSON(Graph graph, Partition communities, String filePath){
-            File file = new File(filePath);
-            file.getParentFile().mkdirs();
-            PrintWriter jsonFile = null;
-            try{
-                jsonFile = new PrintWriter(file);
-            }catch (FileNotFoundException e){
-                System.out.println(e.getMessage());
-                System.exit(0);
-            }
-
-            jsonFile.println("{");// start of JSON file
-            jsonFile.println("\"nodes\":[");// start of nodes array
+        public static void toJSON(Graph graph, Partition finalCommunities,String directory,int index){
             Point2D[] positions = computePositions(graph);
-            List<Node> nodes = graph.getNodes();
-            for(Node n: nodes){
-                int nodeId = n.getNodeId();
-                String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f}",nodeId, nodeId,communities.communityOf(n), positions[nodeId].getX(), positions[nodeId].getY());
-                if(!n.equals(nodes.getLast())) item+=",";
-                jsonFile.println(item);
-            }
-            jsonFile.println("],");// end of nodes array
+            String[] filePaths = {String.format("visualization/public/%s/initialGraph%d.json",directory, index),String.format("visualization/public/%s/optimizedGraph%d.json",directory, index)};
+            Partition[] communities = {new Partition(graph),finalCommunities};// initial and final states
+            for(int i=0;i<2;i++){// generate two files one for each community partition
+                File file = new File(filePaths[i]);
+                file.getParentFile().mkdirs();
+                PrintWriter jsonFile = null;
+                try{
+                    jsonFile = new PrintWriter(file);
+                }catch (FileNotFoundException e){
+                    System.out.println(e.getMessage());
+                    System.exit(0);
+                }
 
-            jsonFile.println("\"edges\":[");// start of edges array
-            List<Edge> edges = graph.getEdges();
-            for(Edge e: edges){
-                int node1Id = e.getEndpoints().getNode1().getNodeId();
-                int node2Id = e.getEndpoints().getNode2().getNodeId();
-                String item = String.format("{\"from\":%d,\"to\":%d}", node1Id, node2Id);
-                if(!e.equals(edges.getLast())) item+=",";
-                jsonFile.println(item);
+                jsonFile.println("{");// start of JSON file
+                jsonFile.println("\"nodes\":[");// start of nodes array
+                List<Node> nodes = graph.getNodes();
+                for(Node n: nodes){
+                    int nodeId = n.getNodeId();
+                    String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f}",nodeId, nodeId,communities[i].communityOf(n), positions[nodeId].getX(), positions[nodeId].getY());
+                    if(!n.equals(nodes.getLast())) item+=",";
+                    jsonFile.println(item);
+                }
+                jsonFile.println("],");// end of nodes array
+
+                jsonFile.println("\"edges\":[");// start of edges array
+                List<Edge> edges = graph.getEdges();
+                for(Edge e: edges){
+                    int node1Id = e.getEndpoints().getNode1().getNodeId();
+                    int node2Id = e.getEndpoints().getNode2().getNodeId();
+                    String item = String.format("{\"from\":%d,\"to\":%d}", node1Id, node2Id);
+                    if(!e.equals(edges.getLast())) item+=",";
+                    jsonFile.println(item);
+                }
+                jsonFile.println("]");// end of edges array
+                jsonFile.println("}");
+                jsonFile.close();
+            System.out.println(String.format("Exported: "+filePaths[i]));
+
             }
-            jsonFile.println("]");// end of edges array
-            jsonFile.println("}");
-            jsonFile.close();
         }
-
     }

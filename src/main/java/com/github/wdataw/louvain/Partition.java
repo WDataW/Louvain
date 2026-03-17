@@ -14,7 +14,7 @@ public class Partition {
     private final int[] communitySizes;// Sigma C hat
     private final Graph graph;
 
-    Partition(Graph graph){
+    public Partition(Graph graph){
         this.graph = graph;
         this.nodeToCommunity = initCommunities(graph);
         this.nodeToDegree = initDegrees(graph);

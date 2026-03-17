@@ -31,7 +31,7 @@ export default function LandingPage({ className = "", children, ...props }) {
             edges: 31839,
             nodes: 8846,
             image: "/assets/images/Gnutella05.png",
-            title: "Gnutella peer-to-peer network",
+            title: "Gnutella peer-to-peer network, August 5 2002",
             source: "https://snap.stanford.edu/data/p2p-Gnutella05.html"
         },
         {
@@ -41,6 +41,14 @@ export default function LandingPage({ className = "", children, ...props }) {
             image: "/assets/images/deezer.png",
             title: "Deezer Europe Social Network",
             source: "https://snap.stanford.edu/data/feather-deezer-social.html"
+        },
+        {
+            dirName: "/Gnutella31",
+            edges: 147892,
+            nodes: 62586,
+            image: "/assets/images/Gnutella02.png",
+            title: "Gnutella peer-to-peer network, August 31 2002",
+            source: "https://snap.stanford.edu/data/p2p-Gnutella31.html"
         },
 
     ]
