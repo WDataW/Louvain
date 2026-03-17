@@ -11,9 +11,7 @@
     import java.io.File;
     import java.io.FileNotFoundException;
     import java.io.PrintWriter;
-    import java.util.HashMap;
-    import java.util.List;
-    import java.util.Map;
+    import java.util.*;
 
     public class JSONExporter {
         private static Point2D[] computePositions(Graph graph) {
@@ -79,6 +77,17 @@
             Point2D[] positions = computePositions(graph);
             String[] filePaths = {String.format("visualization/public/%s/initialGraph%d.json",directory, index),String.format("visualization/public/%s/optimizedGraph%d.json",directory, index)};
             Partition[] communities = {new Partition(graph),finalCommunities};// initial and final states
+
+            Set<Integer> connectedIds = new HashSet<>();
+            for(Edge e:graph.getEdges()){
+                int node1Id = e.getEndpoints().getNode1().getNodeId() ;
+                int node2Id = e.getEndpoints().getNode2().getNodeId();
+                if(node2Id!=node1Id){ // this means the node is connected to the graph, not isolated
+                    connectedIds.add(node1Id);
+                    connectedIds.add(node2Id);
+                }
+            }
+
             for(int i=0;i<2;i++){// generate two files one for each community partition
                 File file = new File(filePaths[i]);
                 file.getParentFile().mkdirs();
@@ -95,7 +104,7 @@
                 List<Node> nodes = graph.getNodes();
                 for(Node n: nodes){
                     int nodeId = n.getNodeId();
-                    String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f}",nodeId, nodeId,communities[i].communityOf(n), positions[nodeId].getX(), positions[nodeId].getY());
+                    String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f,\"disconnected\":%b}",nodeId, nodeId,communities[i].communityOf(n), positions[nodeId].getX(), positions[nodeId].getY(),!connectedIds.contains(nodeId));
                     if(!n.equals(nodes.getLast())) item+=",";
                     jsonFile.println(item);
                 }
