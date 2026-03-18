@@ -48,7 +48,7 @@ public class Partition {
     // initializes the degree of each community (community degree: sum of community nodes' degrees)
     private double[] initCommunityDegrees(Graph graph){
 
-        double[] communityDegreeSum = new double[nodeToCommunity.length + 1];// one extra slot is used as an isolated community, to isolate a node before computing modularity gains
+        double[] communityDegreeSum = new double[graph.getOrder() + 1];// one extra slot is used as an isolated community, to isolate a node before computing modularity gains
         // for each node in the graph
         for(Node node: graph.getNodes()){
             //store the node id

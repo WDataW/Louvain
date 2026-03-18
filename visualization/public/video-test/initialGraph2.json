@@ -1,0 +1,11 @@
+{
+"nodes":[
+{"id":0,"label":"0","group":0,"x":-318.386902,"y":190.161346,"disconnected":false},
+{"id":1,"label":"1","group":1,"x":-337.784424,"y":153.023285,"disconnected":false}
+],
+"edges":[
+{"from":0,"to":0},
+{"from":1,"to":1},
+{"from":0,"to":1}
+]
+}
