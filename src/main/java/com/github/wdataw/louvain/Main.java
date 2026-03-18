@@ -16,8 +16,8 @@ public class Main {
         Locale.setDefault(Locale.US);// essential don't remove.
 //        Graph graph = Graph.readGraph("/p2p-Gnutella31.txt","\t");// 62586 nodes, 147892 edges
 //        Graph graph = Graph.readGraph("/deezer_europe.csv",",");// 28281 nodes, 92752 edges
-//        Graph graph = Graph.readGraph("/facebook_combined.txt"," ");// 4039 nodes, 88234 edges
-        Graph graph = Graph.readGraph("/video-example.txt", " ");
+        Graph graph = Graph.readGraph("/facebook_combined.txt"," ");// 4039 nodes, 88234 edges
+//        Graph graph = Graph.readGraph("/video-example.txt", " ");
         List<Map<Integer, Set<Integer>>> dendogram =  Louvain.louvain(graph,"Gnutella31");
 
 
