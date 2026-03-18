@@ -18,7 +18,7 @@
         // calculates nodes positions based on edge connections using FA2
         private static Point2D[] computePositions(Graph graph) {
             List<Node> nodes = graph.getNodes();
-            int numberOfNodes = graph.getSize();
+            int numberOfNodes = graph.getOrder();
             if (numberOfNodes == 0) return new Point2D[0];// if graph has 0 nodes -> nothing to compute
 
             // Gephi boilerplate

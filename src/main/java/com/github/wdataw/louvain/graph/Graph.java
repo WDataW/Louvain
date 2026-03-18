@@ -6,7 +6,7 @@ import java.util.*;
 public class Graph {
     // attributes
     private double weight;
-    private int size;
+    private int order;
     // used to initialize graphID
     private static int idCounter = 0;
     // unique identifier of a graph
@@ -27,7 +27,7 @@ public class Graph {
         this.nodes = new ArrayList<Node>(nodes);
         this.adjList= toAdjList(this.edges,this.nodes);
         this.weight = getGraphWeight();
-        this.size = this.nodes.size();
+        this.order = this.nodes.size();
 
     }
     public Graph(){
@@ -36,7 +36,7 @@ public class Graph {
         this.nodes = new ArrayList<Node>();
         this.adjList= toAdjList(this.edges,this.nodes);
         this.weight = 0;
-        this.size = 0;
+        this.order = 0;
     }
 
     // getters
@@ -59,10 +59,9 @@ public class Graph {
     public double getWeight(){
         return this.weight;
     }
-    public int getSize(){
-        return this.size;
+    public int getOrder(){
+        return this.order;
     }
-    // testing only - KEY REMOVE
     public Node getNodeByID(int nodeID){
         return idToNode.get(nodeID);
     }
@@ -78,7 +77,7 @@ public class Graph {
         if(idToNode.containsKey(newNode.getNodeId()))return;// if node already exists, don't add it
         idToNode.put(newNode.getNodeId(), newNode);
         nodes.add(newNode);
-        size++;
+        order++;
     }
     public void addEdge(Edge newEdge){
         if(idToEdge.containsKey(newEdge.getEdgeID()))return;// if edge already exists, don't add it

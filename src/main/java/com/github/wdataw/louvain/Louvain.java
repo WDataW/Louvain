@@ -57,7 +57,7 @@ public class Louvain {
 
         int idCounter = 0;
         Map<Integer,Node> communityToSuperNode = new HashMap<>();
-        for(int i=0;i<graph.getSize();i++){
+        for(int i=0;i<graph.getOrder();i++){
             if(communities.sizeOf(i)==0)continue;// if the community is not empty then it is converted to a super vertex
             Node superNode = new Node(idCounter++);
             aggregatedGraph.addNode(superNode);
