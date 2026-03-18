@@ -9,21 +9,28 @@ public class Louvain {
         List<Map<Integer,Set<Integer>>> dendogram = new ArrayList<>();
 
         boolean canImprove = true;
-        int level = 0;
-        while(canImprove){
+        int level = 0;// in each level the communities are optimized then the graph is aggregated
+        while(canImprove){// keep iterating until modularity no longer increases
             canImprove = false;
 
             Partition initialCommunities = new Partition(graph);// initialize communities;
-            Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
-            JSONExporter.toJSON(graph,optimizedCommunities, directory, level);// for visualization create 2 json files, before and after optimization
+            double initialModularity = modularityOf(graph, initialCommunities);
 
-            dendogram.add(mapSuperNodetoNodes(graph,optimizedCommunities));
-            Graph aggregatedGraph = aggregate(graph, optimizedCommunities);
-            if(aggregatedGraph.getSize() < graph.getSize())canImprove=true;
+            Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
+            double optimizedModularity = modularityOf(graph, optimizedCommunities);
+
+//            JSONExporter.toJSON(graph,optimizedCommunities, directory, level);// for visualization create 2 json files, before and after optimization
+
+            dendogram.add(mapSuperNodetoNodes(graph,optimizedCommunities));// keep a map of the nodes that a super node consists of (in every level the nodes in communities are compressed into one super node, we need to keep a track of super node meanings)
+            Graph aggregatedGraph = aggregate(graph, optimizedCommunities);// aggregate graph, i.e. create new graph with super nodes
+
+            if(optimizedModularity > initialModularity) canImprove = true;// if not, then we weren't able to find any better partition therefore the algorithm stops
+            System.out.println(initialModularity+" init");
+            System.out.println(optimizedModularity+" fini");
             graph = aggregatedGraph;
             level++;
         }
-        return dendogram;
+        return dendogram;// for each level, maps the super nodes to the original nodes they're composed of (e.g. superNode1 => {node1, node2, node3})
     }
 
     public static double modularityOf(Graph graph, Partition communities) {
