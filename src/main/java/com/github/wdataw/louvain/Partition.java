@@ -35,12 +35,12 @@ public class Partition {
     /* purpose: to compute modularity gain, a node must first be removed from its current community for it not to corrupt the real modularity gain
     after that the node is inserted in the community with the highest gain */
     public void removeNodeFromCommunity(Node node){
-        moveNodeToCommunity(node, graph.getSize());// last index is reserved for temporary community swappings
+        moveNodeToCommunity(node, graph.getOrder());// last index is reserved for temporary community swappings
     }
 
     // initializes community sizes
     private int[] initCommunitySizes(){
-        int[] sizes = new int[graph.getSize() + 1];
+        int[] sizes = new int[graph.getOrder() + 1];
         Arrays.fill(sizes, 1);
         return sizes;
     }
@@ -66,7 +66,7 @@ public class Partition {
     // initializes internal community weights
     private double[] initCommunityWeights(Graph graph){ // Angel
         // Array sized by number of nodes (community IDs match node IDs at initialization)
-        double[] communityWeightSum = new double[graph.getNodes().size() + 1];
+        double[] communityWeightSum = new double[graph.getOrder() + 1];
         /* At initialization each node is its own community, so NO edge can have
         both endpoints in the same community (unless it's a self-loop). */
         // We still iterate all edges to correctly handle self-loops.
@@ -145,7 +145,7 @@ public class Partition {
 
     // initializes community mapping, where each node starts in a new community
     private int[] initCommunities(Graph graph){// initializes the communities, each node = a community
-        int[] nodeToCommunity = new int[graph.getNodes().size()];
+        int[] nodeToCommunity = new int[graph.getOrder()];
         for(Node n: graph.getNodes()){// each node starts in its own community
             nodeToCommunity[n.getNodeId()] = n.getNodeId();
         }
@@ -155,7 +155,7 @@ public class Partition {
     // initializes the nodes degrees once at creation, degrees of individual nodes never change
     private double[] initDegrees(Graph graph){
         List<Edge> edges = graph.getEdges();
-        double[] nodeToDegree = new double[graph.getNodes().size()];
+        double[] nodeToDegree = new double[graph.getOrder()];
         for(Edge e: edges){
             Node node1 = e.getEndpoints().getNode1();// first endpoint
             Node node2 = e.getEndpoints().getNode2();// second endpoint
