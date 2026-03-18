@@ -34,7 +34,7 @@ public class Louvain {
     }
 
     public static double modularityOf(Graph graph, Partition communities) {
-        double m = graph.getGraphWeight();
+        double m = graph.getWeight();
         double modularity = 0.0;
 
         double[] communityWeights = communities.getCommunityWeightSum();
