@@ -30,6 +30,9 @@ public class Graph {
     }
 
     // getters
+    public int getGraphID(){
+        return graphID;
+    }
     public List<Edge> getEdges() {
         return edges;
     }
