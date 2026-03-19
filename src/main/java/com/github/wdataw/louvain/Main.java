@@ -13,18 +13,15 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);// essential don't remove.
-        // Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t");// 62586 nodes,
-        // 147892 edges
-        // Graph graph = Graph.readGraph("/deezer_europe.csv",",");// 28281 nodes, 92752
-        // edges
-        // Graph graph = Graph.readGraph("/facebook_combined.txt"," ");// 4039 nodes,
-        // 88234 edges
+        // Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t");// 62586 nodes, 147892 edges
+        // Graph graph = Graph.readGraph("/deezer_europe.csv",",");// 28281 nodes, 92752 edges
+        // Graph graph = Graph.readGraph("/facebook_combined.txt"," ");// 4039 nodes, 88234 edges
         Graph graph = Graph.readGraph("/BioGrid-Arabidopsis-Thaliana-Columbia.txt", " ");
         // Graph graph = Graph.readGraph("/petster-friendships-hamster-uniq", " ");
         // Graph graph = Graph.readGraph("/video-example.txt", " ");
         List<Map<Integer, Set<Integer>>> dendrogram = Louvain.louvain(graph, "test");
 
-        // print dendogram
+        // print dendrogram
         for (int i = 0; i < dendrogram.size(); i++) {
             Map<Integer, Set<Integer>> currentLevel = dendrogram.get(i);
             System.out.println("Level " + i);
