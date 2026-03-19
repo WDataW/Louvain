@@ -29,10 +29,8 @@ public class Louvain {
             // 1- optimize graph communities
             Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
             double optimizedModularity = modularityOf(graph, optimizedCommunities);// compute modularity after community optimization
-
             // for visualization create 2 JSON files, before and after optimization. create them once then use the JSONs as needed
             JSONExporter.toJSON(graph,optimizedCommunities, directory, level);
-
             // 2- add optimized community mapping to the dendrogram
             dendrogram.add(getSuperNodeToNodes(graph,optimizedCommunities));
 
@@ -42,8 +40,6 @@ public class Louvain {
             // if the optimization increased the modularity, we give the algorithm another iteration, else we stop (no point of iterating if modularity isn't going to increase)
             if(optimizedModularity > initialModularity) canImprove = true;// 5- terminate when the modularity stops increasing
 
-            System.out.println(initialModularity+" init");
-            System.out.println(optimizedModularity+" fini");
             graph = aggregatedGraph;
             level++;
         }
@@ -82,7 +78,7 @@ public class Louvain {
         Graph aggregatedGraph = new Graph();
 
         // 1- convert each non-empty community to a super node with a self-loop of the community weight
-        Map<Integer,Node> communityToSuperNode = createSuperNodes(aggregatedGraph, communities);
+        Map<Integer,Node> communityToSuperNode = createSuperNodes(aggregatedGraph,communities);
 
         // 2- convert all edges between any two communities to a single edge between the super nodes resulting from these communities
         Map<String,Edge> superConnections = new HashMap<>();// keeps track of edges between super nodes
@@ -238,16 +234,16 @@ public class Louvain {
     // turns every non-empty community to a super node, and returns the map for community -> superNode
     private static Map<Integer,Node> createSuperNodes(Graph aggregatedGraph, Partition communities){
         Map<Integer,Node> communityToSuperNode = new HashMap<>();
-        Map<Integer,Integer> communityToSuperNodeId = getCommunityToSuperNodeId(communities);
 
         // for each community that could be converted to a super node (non-empty communities)
-        for(int c : communityToSuperNodeId.keySet()){
-            int superNodeId = communityToSuperNodeId.get(c);// get the calculated id for the super node
-            Node superNode = new Node(superNodeId);// create the super node
-            aggregatedGraph.addNode(superNode);// add super node to graph
-            communityToSuperNode.put(c,superNode);// map the community to the super node
+        int idCounter=0;
+        for(int i=0;i<communities.getNodeToCommunity().length;i++){
+            if(communities.sizeOf(i)==0)continue;// if the community is not empty then it is converted to a super vertex
+            Node superNode = new Node(idCounter++);// create super node
+            aggregatedGraph.addNode(superNode);// add node to aggregated graph
+            communityToSuperNode.put(i,superNode);// add community->supernode mapping
 
-            double communityWeight = communities.weightOfCommunity(c);
+            double communityWeight = communities.weightOfCommunity(i);
             // internal weight is collapsed into a self-loop for the super vertex
             if(communityWeight > 0)aggregatedGraph.addEdge(new Edge(superNode,superNode, communityWeight));
         }
