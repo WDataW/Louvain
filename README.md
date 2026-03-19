@@ -31,39 +31,50 @@ Optional components support visualization by exporting graph data and layout coo
 
 ---
 
-## Workflow
+## Requirements
 
-1. Place a dataset file in the `src/main/resources` folder.
-2. Load the graph using `Graph.readGraph`.
-3. Pass the graph to `Louvain.louvain`.
+### Core Application (Java)
 
-Example:
+- Java Development Kit (JDK) 21 or newer
+- Maven 3.6 or newer
 
-```java
-Locale.setDefault(Locale.US); // Essential — do not remove
+### Visualization Client (Optional)
 
-Graph graph = Graph.readGraph("/facebook_combined.txt", " ");
-List<Map<Integer, Set<Integer>>> dendrogram =
-    Louvain.louvain(graph, "output");
-```
-
-The dataset path is relative to the resources directory.
+- Node.js 18 or newer
+- npm
 
 ---
 
-## Important Notes
+## Dependencies
 
-- `Locale.setDefault(Locale.US)` ensures decimal numbers use a dot (`.`) separator.
-- Removing this line may cause parsing errors on systems that use commas as decimal separators.
-- The second argument to `readGraph` specifies the delimiter used in the dataset.
+### Core Application
 
-Examples:
+- Gephi Toolkit 0.10.0 — ForceAtlas2 layout computation
 
-```java
-Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t"); // tab-delimited
-Graph graph = Graph.readGraph("/deezer_europe.csv", ",");   // comma-separated
-Graph graph = Graph.readGraph("/facebook_combined.txt", " "); // space-separated
+Dependencies are managed automatically via Maven (`pom.xml`).
+
+### Client
+
+Frontend dependencies (React, Tailwind CSS, vis-network, etc.) are managed via `npm` in the `visualization` directory.
+
+---
+
+## Installation & Build
+
+### Clone the repository
+
+```bash
+git clone https://github.com/WDataW/Louvain.git
+cd Louvain
 ```
+
+### Build with Maven
+
+```bash
+mvn clean install
+```
+
+This compiles the project and downloads dependencies.
 
 ---
 
@@ -93,6 +104,62 @@ Example (unweighted):
 2 3
 3 4
 ```
+
+---
+
+## Running the Program
+
+The application is intended to be run from an IDE.
+
+1. Open the project as a Maven project.
+2. Ensure JDK 21 or newer is configured.
+3. Place your dataset file in `src/main/resources`.
+4. Edit the main class to select the dataset.
+5. Run the program.
+
+Example:
+
+```java
+Locale.setDefault(Locale.US); // Essential
+
+Graph graph = Graph.readGraph("/my-dataset.txt", " ");
+List<Map<Integer, Set<Integer>>> dendrogram =
+    Louvain.louvain(graph, "output");
+```
+
+### Important Notes
+
+- `Locale.setDefault(Locale.US)` ensures decimal numbers use a dot (`.`) separator.
+- Removing this line may cause parsing errors on systems that use commas as decimal separators.
+- The second argument to `readGraph` specifies the delimiter used in the dataset.
+
+Examples:
+
+```java
+Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t"); // tab-delimited
+Graph graph = Graph.readGraph("/deezer_europe.csv", ",");   // comma-separated
+Graph graph = Graph.readGraph("/facebook_combined.txt", " "); // space-separated
+```
+
+---
+
+## Workflow
+
+1. Place a dataset file in the `src/main/resources` folder.
+2. Load the graph using `Graph.readGraph`.
+3. Pass the graph to `Louvain.louvain`.
+
+Example:
+
+```java
+Locale.setDefault(Locale.US); // Essential — do not remove
+
+Graph graph = Graph.readGraph("/facebook_combined.txt", " ");
+List<Map<Integer, Set<Integer>>> dendrogram =
+    Louvain.louvain(graph, "output");
+```
+
+The dataset path is relative to the resources directory.
 
 ---
 
@@ -128,6 +195,7 @@ Each JSON file may include:
 - Edges
 - Community assignments
 - ForceAtlas2 layout coordinates
+- Connectivity information
 
 These files are intended for client-side rendering using vis-network.
 
@@ -162,70 +230,49 @@ An optional web interface renders the graph interactively in the browser using v
 
 The client consumes the exported JSON files to display communities with pan, zoom, and interaction.
 
----
-
-## Requirements
-
-- Java Development Kit (JDK) 21 or newer
-- Maven 3.6 or newer
-
----
-
-## Dependencies
-
-- Gephi Toolkit 0.10.0 — ForceAtlas2 layout computation
-
-Dependencies are managed automatically via Maven (`pom.xml`).
-
----
-## Installation & Build
-
-### Clone the repository
+### Running the Visualization
 
 ```bash
-git clone https://github.com/WDataW/Louvain.git
-cd Louvain
+cd visualization
+npm install --legacy-peer-deps
+npm run dev
 ```
 
-### Build with Maven
+> `--legacy-peer-deps` is required due to peer dependency conflicts with React 19.
 
-```bash
-mvn clean install
+Open the local URL shown in the terminal (typically `http://localhost:5173`).
+
+### Loading Graph Data
+
+Graph data is loaded from the public directory based on the route:
+
+```
+/visualize/<graphdirname>
 ```
 
-This compiles the project and downloads dependencies.
+For example:
 
----
-
-## Running the Program
-
-The application is intended to be run from an IDE.
-
-1. Open the project as a Maven project.
-2. Ensure JDK 21 or newer is configured.
-3. Place your dataset file in `src/main/resources`.
-4. Edit the main class to select the dataset.
-5. Run the program.
-
-Example:
-
-```java
-Locale.setDefault(Locale.US); // Essential
-
-Graph graph = Graph.readGraph("/my-dataset.txt", " ");
-List<Map<Integer, Set<Integer>>> dendrogram =
-    Louvain.louvain(graph, "output");
 ```
+/visualize/facebook
+```
+
+This loads precomputed JSON files from:
+
+```
+visualization/public/facebook/
+```
+
 ---
 
 ## Project Structure
 
 ```
-src/main/java/        Louvain algorithm and graph processing
-src/main/resources/   Dataset files
-pom.xml               Maven configuration
-visualization/        React-based client for graph visualization
-visualization/public/<graph directory> Precomputed graph JSON files (served to client)
+src/main/java/                       Louvain algorithm and graph processing
+src/main/java/graph/                 Graph modelling classes
+src/main/resources/                  Dataset files
+pom.xml                              Maven configuration
+visualization/                       React-based client for graph visualization
+visualization/public/<graphdirname>  Precomputed graph JSON files (served to client)
 ```
 
 ---
@@ -247,8 +294,5 @@ Fast unfolding of communities in large networks.
 
 - Wael Kweder
 - Abdulrahman Zwobe
-- Abdulwahid Ghalib 
 - Tamim Al-Qurashi
-
----
-
+- Abdulwahid Ghalib
