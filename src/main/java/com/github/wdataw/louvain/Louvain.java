@@ -29,8 +29,10 @@ public class Louvain {
             // 1- optimize graph communities
             Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
             double optimizedModularity = modularityOf(graph, optimizedCommunities);// compute modularity after community optimization
+
             // for visualization create 2 JSON files, before and after optimization. create them once then use the JSONs as needed
-            JSONExporter.toJSON(graph,optimizedCommunities, directory, level);
+            if(!directory.isEmpty())JSONExporter.toJSON(graph,optimizedCommunities, directory, level);
+            System.out.println(optimizedModularity);
             // 2- add optimized community mapping to the dendrogram
             dendrogram.add(getSuperNodeToNodes(graph,optimizedCommunities));
 
@@ -222,10 +224,13 @@ public class Louvain {
             int superNodeId = communityToSuperNodeId.get(community);
 
             // get the current set of nodes mapped to 'superNodeId'
-            Set<Integer> nodes = map.getOrDefault(superNodeId, new HashSet<Integer>());
+            Set<Integer> nodes = map.getOrDefault(superNodeId, new HashSet<>());
 
-            // add node to them
-            nodes.add(n.getNodeId());
+            // for the first level, map the super node to the original ids from the dataset not the normalized ids
+            Map<Integer,Integer> normalizedToOriginalId = graph.getNormalisedToOriginalId();
+            if(normalizedToOriginalId != null)nodes.add(normalizedToOriginalId.get(n.getNodeId()));
+            else nodes.add(n.getNodeId());
+
             map.put(superNodeId, nodes);
         }
         return map;
