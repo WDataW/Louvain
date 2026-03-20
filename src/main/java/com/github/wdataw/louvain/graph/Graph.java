@@ -10,8 +10,11 @@ public class Graph {
     private static int idCounter = 0;// used to initialize graphID
     private final int graphID;
 
+    // maps the normalized id to the original id from the dataset
+    private Map<Integer,Integer> normalisedToOriginalId;
+
     private List<Edge> edges;
-    private Map<Integer, Edge> idToEdge = new HashMap<>();// provide O(1) edge lookups
+    private Map<String, Edge> idToEdge = new HashMap<>();// provide O(1) edge lookups
 
     private List<Node> nodes;
     private Map<Integer, Node> idToNode = new HashMap<>();// provide O(1) node lookups
@@ -30,6 +33,10 @@ public class Graph {
     }
 
     // getters
+    public Map<Integer, Integer> getNormalisedToOriginalId() {
+        return normalisedToOriginalId;
+    }
+
     public int getGraphID(){
         return graphID;
     }
@@ -53,6 +60,10 @@ public class Graph {
     }
 
     // setters
+    public void setNormalisedToOriginalId(Map<Integer, Integer> normalisedToOriginalId) {
+        this.normalisedToOriginalId = normalisedToOriginalId;
+    }
+
     public void setEdges(List<Edge> edges) {
         this.edges = edges;
     }
@@ -70,9 +81,15 @@ public class Graph {
 
     // adds an edge to the graph, filters out duplicate edges (duplicate as in having the same id)
     public void addEdge(Edge newEdge){
-        if(idToEdge.containsKey(newEdge.getEdgeID()))return;// if edge already exists, don't add it
-        idToEdge.put(newEdge.getEdgeID(),newEdge);
-        edges.add(newEdge);
+        String newEdgeId = newEdge.getEdgeID();
+        if(idToEdge.containsKey(newEdgeId)){
+            Edge existingEdge = idToEdge.get(newEdgeId);
+            existingEdge.setEdgeWeight(existingEdge.getEdgeWeight() + newEdge.getEdgeWeight());
+        }// if edge already exists, add the weights together (to account for multiple edges)
+        else{
+            idToEdge.put(newEdge.getEdgeID(),newEdge);
+            edges.add(newEdge);
+        }
     }
 
     // updates the adjacency list after nodes/edges are added to the graph
@@ -154,13 +171,23 @@ public class Graph {
 
         Graph newGraph = new Graph();// start with an empty graph, then add nodes and edges one by one
 
+        Map<Integer,Integer> idToIndex = new HashMap<>();
+        int normalisedId = 0;
         while(input.hasNextLine()){// read the file line by line
             String line = input.nextLine();// each line represents an edge
             String[] edgeComponents = line.split(delimiter);// split the line based on the delimiter
 
+            int node1Id = Integer.parseInt(edgeComponents[0]);
+            if(!idToIndex.containsKey(node1Id))
+                idToIndex.put(Integer.parseInt(edgeComponents[0]), normalisedId++);
+
+            int node2Id = Integer.parseInt(edgeComponents[1]);
+            if(!idToIndex.containsKey(node2Id))
+                idToIndex.put(Integer.parseInt(edgeComponents[1]), normalisedId++);
+
             // construct nodes/edge object
-            Node node1 = new Node(Integer.parseInt(edgeComponents[0]));
-            Node node2 = new Node(Integer.parseInt(edgeComponents[1]));
+            Node node1 = new Node(idToIndex.get(node1Id));
+            Node node2 = new Node(idToIndex.get(node2Id));
             float weight = 1f; // if the dataset doesn't provide edge weights, then the weight is 1 by default
             if(edgeComponents.length==3) weight = Float.parseFloat(edgeComponents[2]);// if weight is provided then use it
 
@@ -171,9 +198,20 @@ public class Graph {
             newGraph.addNode(node2);
             newGraph.addEdge(edge);
         }
+
         newGraph.updateAdjList();// adjList is created when the Graph object is created, then updated manually when we're done inserting nodes and edges
         newGraph.updateGraphWeight();// graph weight starts as 0, then updated manually when we're done inserting nodes and edges
+        newGraph.setNormalisedToOriginalId(reverseMap(idToIndex));// keep track of the original ids to use them in the dendrogram's first level mapping
+
         System.out.println("Graph read succesfully.");
         return newGraph;
+    }
+
+    private static Map<Integer,Integer> reverseMap(Map<Integer,Integer> idToIndex){
+        Map<Integer,Integer> indexToId = new HashMap<>();
+        for(int i:idToIndex.keySet()){
+            indexToId.put(idToIndex.get(i),i);
+        }
+        return indexToId;
     }
 }

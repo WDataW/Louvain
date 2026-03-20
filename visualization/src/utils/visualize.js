@@ -3,21 +3,21 @@ import { DataSet } from 'vis-data';
 
 // converts JSON nodes to dataset nodes
 const getNodes = (graph) => {
-    return new DataSet(graph.nodes.filter((n)=>!n.disconnected));
+    return new DataSet(graph.nodes.filter((n) => !n.disconnected));
 }
 
 // converts JSON edges to dataset edges
 const getEdges = (graph) => {
     const connectedIds = getConnectedIds(graph);
-    return new DataSet(graph.edges.filter((e)=>{
+    return new DataSet(graph.edges.filter((e) => {
         return connectedIds.has(e.from) && connectedIds.has(e.to);
     }));
 }
-const getConnectedIds = (graph)=>{
+const getConnectedIds = (graph) => {
     const nodes = graph.nodes;
     const connectedIds = new Set();
-    for(let n of nodes){
-        if(!n.disconnected)connectedIds.add(n.id);
+    for (let n of nodes) {
+        if (!n.disconnected) connectedIds.add(n.id);
     }
     return connectedIds;
 }

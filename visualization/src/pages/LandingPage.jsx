@@ -19,6 +19,14 @@ export default function LandingPage({ className = "", children, ...props }) {
             source: "http://konect.cc/networks/petster-friendships-hamster/"
         },
         {
+            dirName: "/musae-ptbr",
+            edges: 31299,
+            nodes: 1912,
+            image: "/assets/images/ptbr.png",
+            title: "Twitch Social Networks - PT",
+            source: "https://snap.stanford.edu/data/twitch-social-networks.html"
+        },
+        {
             dirName: "/facebook",
             edges: 88234,
             nodes: 4039,
@@ -41,6 +49,22 @@ export default function LandingPage({ className = "", children, ...props }) {
             image: "/assets/images/deezer.png",
             title: "Deezer Europe Social Network",
             source: "https://snap.stanford.edu/data/feather-deezer-social.html"
+        },
+        {
+            dirName: "/astroph",
+            edges: 198110,
+            nodes: 18772,
+            image: "/assets/images/astroph.png",
+            title: "Astro Physics Collaboration Cetwork",
+            source: "https://snap.stanford.edu/data/ca-AstroPh.html"
+        },
+        {
+            dirName: "/musae-facebook",
+            edges: 171002,
+            nodes: 22470,
+            image: "/assets/images/musaefacebook.png",
+            title: "Facebook Large Page-Page Network",
+            source: "https://snap.stanford.edu/data/facebook-large-page-page-network.html"
         },
         // {
         //     dirName: "/Gnutella31",

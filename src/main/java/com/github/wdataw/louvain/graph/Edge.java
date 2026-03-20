@@ -4,8 +4,7 @@ import java.util.Objects;
 
 public class Edge {
     // attributes
-    private static int idCounter = 0;
-    private final int edgeID;
+    private final String edgeID;
     private double edgeWeight;
     private final Endpoints endpoints;
 
@@ -13,7 +12,15 @@ public class Edge {
     public Edge(Node node1, Node node2 ,double EdgeWeight) {
         this.edgeWeight = EdgeWeight;
         this.endpoints = new Endpoints(node1,node2);
-        this.edgeID = idCounter++;
+        this.edgeID = constructId(node1,node2);
+    }
+
+    private String constructId(Node node1, Node node2){
+        int node1Id = node1.getNodeId();
+        int node2Id = node2.getNodeId();
+        int a = Math.min(node1Id,node2Id);
+        int b = Math.max(node1Id,node2Id);
+        return a+"e"+b;
     }
 
     // setters
@@ -22,7 +29,7 @@ public class Edge {
     }
 
     // getters
-    public int getEdgeID() {
+    public String getEdgeID() {
         return edgeID;
     }
     public double getEdgeWeight() {
