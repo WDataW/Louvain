@@ -10,14 +10,15 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);// essential don't remove.
-         Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t");// 62586 nodes, 147892 edges
-//         Graph graph = Graph.readGraph("/deezer_europe.csv",",");// 28281 nodes, 92752 edges
-//         Graph graph = Graph.readGraph("/facebook_combined.txt"," ");// 4039 nodes, 88234 edges
+//         Graph graph = Graph.readGraph("/p2p-Gnutella31.txt", "\t");
+         Graph graph = Graph.readGraph("/deezer_europe.csv",",");
+//         Graph graph = Graph.readGraph("/facebook_combined.txt"," ");
+//         Graph graph = Graph.readGraph("/CA-AstroPh.txt","\t");
+//         Graph graph = Graph.readGraph("/musae_PTBR_edges.csv",",");
 //        Graph graph = Graph.readGraph("/BioGrid-Arabidopsis-Thaliana-Columbia.txt", " ");
+//        Graph graph = Graph.readGraph("/musae_facebook_edges.csv", ",");
 //         Graph graph = Graph.readGraph("/petster-friendships-hamster-uniq", " ");
 //        Graph graph = Graph.readGraph("/video-example.txt", " ");
-        System.out.println(graph.getWeight());
-
         List<Map<Integer, Set<Integer>>> dendrogram = Louvain.louvain(graph,"");
 
         // print dendrogram

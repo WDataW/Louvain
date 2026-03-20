@@ -123,10 +123,19 @@
                 jsonFile.println("{");// start of JSON file
                 jsonFile.println("\"nodes\":[");// start of nodes array
                 List<Node> nodes = graph.getNodes();
+                Map<Integer,Integer> normalisedToOriginalId = graph.getNormalisedToOriginalId();
                 for(Node n: nodes){// for each node
                     // create a JSON object as {"id":number, "label":number, "group":number, "x":number, "y":number, "disconnected":boolean}
                     int nodeId = n.getNodeId();
-                    String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f,\"disconnected\":%b}",nodeId, nodeId, communities[i].communityOf(n), positions[nodeId].getX(), positions[nodeId].getY(),!connectedIds.contains(nodeId));
+                    int displayId = nodeId;
+                    if(normalisedToOriginalId != null)displayId = normalisedToOriginalId.get(nodeId);// in the first level display the original id not the normalized one
+                    String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f,\"disconnected\":%b}"
+                            ,nodeId
+                            ,displayId
+                            ,communities[i].communityOf(n)
+                            ,positions[nodeId].getX()
+                            ,positions[nodeId].getY()
+                            ,!connectedIds.contains(nodeId));
                     if(!n.equals(nodes.getLast())) item+=",";// to seperate between array items
                     jsonFile.println(item);
                 }
