@@ -21,12 +21,12 @@ export default function GraphPage({ className = "", children, ...props }) {
                 if (!response1.ok) throw new Error("Fetching done");
                 const initialGraph = await response1.json();
                 tempGraphs.push(initialGraph);
-                tempTitles.push(`Level ${i}: Initial`);
+                tempTitles.push(`Level ${i}: Before`);
 
                 const response2 = await fetch(`/${dirName}/optimizedGraph${i}.json`);
                 const optimizedGraph = await response2.json();
                 tempGraphs.push(optimizedGraph);
-                tempTitles.push(`Level ${i}: Final`);
+                tempTitles.push(`Level ${i}: After`);
                 i++;
             } catch (error) {
                 console.log(error.message);
