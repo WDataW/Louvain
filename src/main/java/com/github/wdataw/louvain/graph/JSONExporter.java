@@ -95,15 +95,20 @@
 
             Partition[] communities = {new Partition(graph),finalCommunities};// initial and final states
 
-            // used to flag diconnected nodes, to exclude them from the visualization
-            // reasoning: isolated nodes don't contribute to community detection in any way, therefore are considered as noise
-            // NOTE: they are only ignored in visualization, but accounted for in everything else
+            /*
+             used to flag diconnected nodes, to exclude them from the visualization
+             reasoning: isolated nodes don't contribute to community detection in any way, therefore are considered as noise
+             NOTE: they are only ignored in visualization, but accounted for in everything else
+             */
             Set<Integer> connectedIds = new HashSet<>();
 
             for(Edge e:graph.getEdges()){// for every edge
                 int node1Id = e.getEndpoints().getNode1().getNodeId();// endpoint1 id
                 int node2Id = e.getEndpoints().getNode2().getNodeId();// endpoint2 id
-                if(node1Id!=node2Id){ // if a node exists as an edge endpoint and this edge isn't a self-loop, then the node is connected
+
+                // if a node exists as an edge endpoint and this edge isn't a self-loop,
+                // then the node is connected
+                if(node1Id!=node2Id){
                     connectedIds.add(node1Id);
                     connectedIds.add(node2Id);
                 }
@@ -128,7 +133,9 @@
                     // create a JSON object as {"id":number, "label":number, "group":number, "x":number, "y":number, "disconnected":boolean}
                     int nodeId = n.getNodeId();
                     int displayId = nodeId;
-                    if(normalisedToOriginalId != null)displayId = normalisedToOriginalId.get(nodeId);// in the first level display the original id not the normalized one
+
+                    // in the first level display the original id not the normalized one
+                    if(normalisedToOriginalId != null)displayId = normalisedToOriginalId.get(nodeId);
                     String item = String.format("{\"id\":%d,\"label\":\"%d\",\"group\":%d,\"x\":%f,\"y\":%f,\"disconnected\":%b}"
                             ,nodeId
                             ,displayId

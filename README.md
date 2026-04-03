@@ -8,6 +8,17 @@ Graph layouts are computed using the ForceAtlas2 (FA2) algorithm via the Gephi T
 
 ---
 
+## Live Demo
+https://louvainproject.vercel.app
+
+![Graph Visualization](assets/graph.png)
+*Community structure detected using the Louvain algorithm.*
+
+![Landing Page](assets/ui.png)
+*Application landing page.*
+
+---
+
 ## Overview
 
 Community detection identifies groups of nodes that are more densely connected to each other than to the rest of the network. The Louvain method is widely used because it is fast, scalable, and produces a hierarchy of communities.
@@ -115,7 +126,8 @@ The application is intended to be run from an IDE.
 2. Ensure JDK 21 or newer is configured.
 3. Place your dataset file in `src/main/resources`.
 4. Edit the main class to select the dataset.
-5. Run the program.
+5. (Optional) Specify an output directory in the `louvain` method call to export the graph as JSON files. Leave it empty to skip exporting.
+6. Run the program.
 
 Example:
 
@@ -152,7 +164,7 @@ Graph graph = Graph.readGraph("/facebook_combined.txt", " "); // space-separated
 Example:
 
 ```java
-Locale.setDefault(Locale.US); // Essential — do not remove
+Locale.setDefault(Locale.US); // Essential
 
 Graph graph = Graph.readGraph("/facebook_combined.txt", " ");
 List<Map<Integer, Set<Integer>>> dendrogram =
@@ -277,16 +289,11 @@ visualization/public/<graphdirname>  Precomputed graph JSON files (served to cli
 
 ---
 
-## Example Use Case
-
-Given a network with densely connected regions, the algorithm identifies communities at multiple levels while preserving the hierarchical structure of the network.
-
----
-
 ## References
 
-Blondel, V. D., Guillaume, J.-L., Lambiotte, R., & Lefebvre, E. (2008).  
-Fast unfolding of communities in large networks.
+[1] V. D. Blondel, J.-L. Guillaume, R. Lambiotte, and E. Lefebvre, “Fast unfolding of communities in large networks,” Journal of Statistical Mechanics: Theory and Experiment, vol. 2008, no. 10, p. P10008, Oct. 2008.
+
+[2] D. Plein, "Discovering Communities: Modularity & Louvain #SoMe3," YouTube, Mar. 2023. [Online]. Available: https://www.youtube.com/watch?v=Xt0vBtBY2BU. [Accessed: Mar. 25, 2026].
 
 ---
 
@@ -294,5 +301,5 @@ Fast unfolding of communities in large networks.
 
 - Wael Kweder
 - Abdulrahman Zwobe
-- Tamim Al-Qurashi
 - Abdulwahid Ghalib
+- Tamim Al-Qurashi

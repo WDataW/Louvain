@@ -6,6 +6,12 @@ import java.util.*;
 
 public class Louvain {
 
+    // louvain without exporting to JSON
+    public static List<Map<Integer, Set<Integer>>> louvain(Graph graph) {
+        return louvain(graph, "");// empty string for directory = no exporting
+    }
+
+    // louvain with exporting to JSON
     public static List<Map<Integer, Set<Integer>>> louvain(Graph graph, String directory) {
         /*
          * steps:
@@ -26,15 +32,16 @@ public class Louvain {
             canImprove = false;
 
             Partition initialCommunities = new Partition(graph);// initialize communities;
-            double initialModularity = modularityOf(graph, initialCommunities);// compute modularity before community
-                                                                               // optimization
+            double initialModularity = modularityOf(graph, initialCommunities);
 
             // 1- optimize graph communities
             Partition optimizedCommunities = optimize(graph, initialCommunities);// optimize communities
-            double optimizedModularity = modularityOf(graph, optimizedCommunities);// compute modularity after community optimization
+            double optimizedModularity = modularityOf(graph, optimizedCommunities);
 
-            // for visualization create 2 JSON files, before and after optimization. create them once then use the JSONs as needed
-            if(!directory.isEmpty())JSONExporter.toJSON(graph,optimizedCommunities, directory, level);
+            // for visualization create 2 JSON files, before and after optimization.
+            // create them once then use the JSONs as needed
+            if (!directory.isEmpty())
+                JSONExporter.toJSON(graph, optimizedCommunities, directory, level);
 
             // 2- add optimized community mapping to the dendrogram
             dendrogram.add(getSuperNodeToNodes(graph, optimizedCommunities));
@@ -42,9 +49,9 @@ public class Louvain {
             // 3- aggregate graph using the optimized communities
             Graph aggregatedGraph = aggregate(graph, optimizedCommunities);
 
-            // if the optimization increased the modularity, we give the algorithm another
-            // iteration, else we stop (no point of iterating if modularity isn't going to
-            // increase)
+            // if the optimization increased the modularity,
+            // we give the algorithm another iteration,
+            // otherwise, we stop (no point of iterating if modularity isn't going to increase)
             if (optimizedModularity > initialModularity)
                 canImprove = true;// 5- terminate when the modularity stops increasing
 
@@ -54,10 +61,8 @@ public class Louvain {
         return dendrogram;
     }
 
-    // modularity measures edge density within communities vs what's expected by
-    // chance
-    // modularity ranges from -1 to 1, where higher means stronger community
-    // structure
+    // modularity measures edge density within communities vs what's expected by chance
+    // modularity ranges from -1 to 1, where higher means stronger community structure
     public static double modularityOf(Graph graph, Partition communities) {
 
         // get the needed data to compute: Q = (1/2m) * Σ(c∈C) ( Σ_c - (Σ_ĉ)^2 / 2m )
@@ -68,9 +73,11 @@ public class Louvain {
         double modularity = 0.0;
         for (int c = 0; c < communityWeights.length; c++) {
             double sigmaCHat = communityDegrees[c];
+
+            // if a community has a degree of 0 then it is either isolated or empty,
+            // and therefore won't affect the modularity
             if (sigmaCHat == 0)
-                continue; // if a community has a degree of 0 then it is either isolated or empty, and
-                          // therefore won't affect the modularity
+                continue;
 
             double sigmaC = communityWeights[c];
             double twoM = 2 * m;
@@ -91,21 +98,21 @@ public class Louvain {
         List<Edge> edges = graph.getEdges();
         Graph aggregatedGraph = new Graph();
 
-        // 1- convert each non-empty community to a super node with a self-loop of the
-        // community weight
+        // 1- convert each non-empty community to a
+        // super node with a self-loop of the community weight
         Map<Integer, Node> communityToSuperNode = createSuperNodes(aggregatedGraph, communities);
 
-        // 2- convert all edges between any two communities to a single edge between the
-        // super nodes resulting from these communities
+        // 2- convert all edges between any two communities to
+        // a single edge between the super nodes resulting from these communities
         Map<String, Edge> superConnections = new HashMap<>();// keeps track of edges between super nodes
         for (Edge e : edges) {
             Node node1 = e.getEndpoints().getNode1();
-            int community1 = communities.communityOf(node1);// community of endpoint1
+            int community1 = communities.communityOf(node1);
             Node node2 = e.getEndpoints().getNode2();
-            int community2 = communities.communityOf(node2);// community of endpoint2
+            int community2 = communities.communityOf(node2);
 
-            // sharing the same community means this is an internal edge, already converted
-            // to a self-loop
+            // sharing the same community means this is an internal edge,
+            // which is already converted to a self-loop
             if (community1 == community2)
                 continue;
 
@@ -115,12 +122,12 @@ public class Louvain {
             Edge edgeBetweenSuperNodes = superConnections.get(connectionId);
             if (edgeBetweenSuperNodes == null) {// if the connection doesn't exist
                 // create a new connection and set the weight equal to the edge weight
-                Node superNode1 = communityToSuperNode.get(community1);// super node representing community1
-                Node superNode2 = communityToSuperNode.get(community2);// super node representing community2
+                Node superNode1 = communityToSuperNode.get(community1);
+                Node superNode2 = communityToSuperNode.get(community2);
                 edgeBetweenSuperNodes = new Edge(superNode1, superNode2, e.getEdgeWeight());
                 aggregatedGraph.addEdge(edgeBetweenSuperNodes);// add edge to the aggregated graph
-                superConnections.put(connectionId, edgeBetweenSuperNodes);// add edge to superConnections, so later we
-                                                                          // can add more weight to it
+                superConnections.put(connectionId, edgeBetweenSuperNodes);// add edge to superConnections,
+                                                                    // so later we can add more weight to it
             } else {// if the connection exists
                     // add the weights of connection edges together
                 double newWeight = edgeBetweenSuperNodes.getEdgeWeight() + e.getEdgeWeight();
@@ -148,8 +155,8 @@ public class Louvain {
          * communities (found the best partition)
          */
         boolean canimprove = true;
-        while (canimprove) {// keep iterating until nodes aren't moving between communities anymore, meaning
-                            // you already found the best partition
+        while (canimprove) {// keep iterating until nodes aren't moving between communities anymore,
+                            // meaning you already found the best partition
             canimprove = false;
 
             for (Node node : graph.getNodes()) {// 1- select a node
@@ -157,8 +164,8 @@ public class Louvain {
 
                 communities.removeNodeFromCommunity(node);// 2- remove the nodes from its current community
 
-                // collect neighbor communities and their connection weight (the weight of edges
-                // connecting the node to a neighbor community)
+                // collect neighbor communities and their connection weight
+                // (the weight of edges connecting the node to a neighbor community)
                 Map<Integer, Double> neighborCommunities = getNeighborCommunities(node, graph, communities);
 
                 double bestModularityGain = 0.0;
@@ -178,8 +185,8 @@ public class Louvain {
                         bestCommunity = candidateCommunity;
                     }
                 }
-                // 5- insert the node into the selected community (the one with the highest
-                // modularit gain)
+                // 5- insert the node into the selected community
+                // (the one with the highest modularit gain)
                 communities.moveNodeToCommunity(node, bestCommunity);
 
                 // if some node moved to a new community this means we still have a chance to
@@ -198,24 +205,22 @@ public class Louvain {
     private static Map<Integer, Double> getNeighborCommunities(Node node, Graph graph, Partition communities) {
         Map<Integer, Double> neighborCommunities = new HashMap<>();
         for (Edge edge : graph.getAdjList().get(node.getNodeId())) {// for all the incident edges on the current node
-            Node node1 = edge.getEndpoints().getNode1();// endpoint1
-            Node node2 = edge.getEndpoints().getNode2();// endpoint1
-            Node neighbor = node1.equals(node) ? node2 : node1;// each edge has two endpoints, one of them must be the
-                                                               // node itself and the other is its neighbor
+            Node node1 = edge.getEndpoints().getNode1();
+            Node node2 = edge.getEndpoints().getNode2();
+            Node neighbor = node1.equals(node) ? node2 : node1;// one endpoint must be the node itself
+                                                               // the other is its neighbor
 
             if (neighbor.equals(node))
-                continue; // skip self-loops, to not consider the self-loop community as a neighbor
-                          // community
+                continue; // skip self-loops
+                          // to not consider the self-loop community as a neighbor community
             int neighborCommunity = communities.communityOf(neighbor);
 
-            // keep track of connection weight between the current node and each neighboring
-            // community
-            // if conncetion is already tracked we add edge weight to it, else: it equals
-            // edge weight
+            // keep track of connection weight between the current node and each neighboring community
+            // if connection is already tracked we add edge weight to it; otherwise, it equals edge weight
             double currentConnectionWeight = neighborCommunities.getOrDefault(neighborCommunity, 0.0);
-            neighborCommunities.put(neighborCommunity, currentConnectionWeight + edge.getEdgeWeight());// neighborCommunity
-                                                                                                       // ->
-                                                                                                       // connectionWeight
+            neighborCommunities.put(neighborCommunity, currentConnectionWeight + edge.getEdgeWeight()); // neighborCommunity
+                                                                                                        // ->
+                                                                                                        // connectionWeight
         }
         return neighborCommunities;
     }
@@ -230,20 +235,22 @@ public class Louvain {
                 continue;// empty communities don't result in a super node
 
             communityToSuperNode.put(i, superNodeIndex++);
-            // reasoning: communities are aggregated into super nodes, but ids reset in the
-            // next level of aggregation
-            // e.g. community at index 17 could become super node at index 0 if the previous
-            // 16 communities are empty
-            // this prevents IndexOutOfBounds exception when accessing nodes in the next
-            // level of aggregation
+            /*
+             communities are aggregated into super nodes
+             but ids reset in the next level of aggregation
+             e.g. community at index 17 could become super node at index 0,
+                  if the previous 16 communities are empty
+             Prevents IndexOutOfBounds exception in the next aggregation level
+            */
         }
         return communityToSuperNode;
     }
-
-    // treats each community as a super node and creates a map of community ->
-    // nodesWithinCommunity
-    // this method provides one entry for the dendrogram, one is generated for each
-    // aggregation level
+    /*
+     treats each community as a super node
+     creates a map of community -> nodesWithinCommunity
+     this method provides one entry for the dendrogram
+     one entry is generated for each aggregation level
+    */
     private static Map<Integer, Set<Integer>> getSuperNodeToNodes(Graph graph, Partition communities) {
 
         Map<Integer, Integer> communityToSuperNodeId = getCommunityToSuperNodeId(communities);
@@ -254,10 +261,12 @@ public class Louvain {
                 continue;// empty communities don't result in a super node
 
             communityToSuperNodeId.put(i, superNodeIndex++);
-            // reasoning: communities are aggregated into super nodes, but ids reset in the
-            // next level of aggregation
-            // e.g. community at index 17 could become super node at index 0 if the previous
-            // 16 communities are empty
+            /*
+             reasoning: communities are aggregated into super nodes,
+             but ids reset in the next level of aggregation
+             e.g. community at index 17 could become super node at index 0,
+             if the previous 16 communities are empty
+            */
         }
 
         Map<Integer, Set<Integer>> map = new HashMap<>();
@@ -268,10 +277,12 @@ public class Louvain {
             // get the current set of nodes mapped to 'superNodeId'
             Set<Integer> nodes = map.getOrDefault(superNodeId, new HashSet<>());
 
-            // for the first level, map the super node to the original ids from the dataset not the normalized ids
-            Map<Integer,Integer> normalizedToOriginalId = graph.getNormalisedToOriginalId();
-            if(normalizedToOriginalId != null)nodes.add(normalizedToOriginalId.get(n.getNodeId()));
-            else nodes.add(n.getNodeId());
+            // for the first level, map the super node to the original ids from the dataset
+            Map<Integer, Integer> normalizedToOriginalId = graph.getNormalisedToOriginalId();
+            if (normalizedToOriginalId != null)
+                nodes.add(normalizedToOriginalId.get(n.getNodeId()));
+            else
+                nodes.add(n.getNodeId());
 
             map.put(superNodeId, nodes);
         }
@@ -283,8 +294,7 @@ public class Louvain {
     private static Map<Integer, Node> createSuperNodes(Graph aggregatedGraph, Partition communities) {
         Map<Integer, Node> communityToSuperNode = new HashMap<>();
 
-        // for each community that could be converted to a super node (non-empty
-        // communities)
+        // for each community that could be converted to a super node (non-empty communities)
         int idCounter = 0;
         for (int i = 0; i < communities.getNodeToCommunity().length; i++) {
             if (communities.sizeOf(i) == 0)
@@ -307,5 +317,21 @@ public class Louvain {
         int a = Math.min(community1, community2);
         int b = Math.max(community1, community2);
         return a + "C" + b;
+    }
+
+    public static void printDendrogram(List<Map<Integer, Set<Integer>>> dendrogram) {
+        for (int i = 0; i < dendrogram.size(); i++) {// for each level
+            Map<Integer, Set<Integer>> currentLevel = dendrogram.get(i);
+            System.out.println("Level " + i);
+            for (int j : currentLevel.keySet()) {// print the superNodeId -> nodeIds from previous level
+                int superNodeId = j;
+                Set<Integer> originalNodeIds = currentLevel.get(superNodeId);
+                System.out.print(superNodeId + " -> ");
+                for (int k : originalNodeIds)
+                    System.out.print(k + " ");
+                System.out.println();
+            }
+            System.out.println();
+        }
     }
 }
