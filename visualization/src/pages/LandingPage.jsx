@@ -66,19 +66,10 @@ export default function LandingPage({ className = "", children, ...props }) {
             title: "Facebook Large Page-Page Network",
             source: "https://snap.stanford.edu/data/facebook-large-page-page-network.html"
         },
-        // {
-        //     dirName: "/Gnutella31",
-        //     edges: 147892,
-        //     nodes: 62586,
-        //     image: "/assets/images/Gnutella02.png",
-        //     title: "Gnutella peer-to-peer network, August 31 2002",
-        //     source: "https://snap.stanford.edu/data/p2p-Gnutella31.html"
-        // },
-
     ]
     return (
         <div className={`px-[2rem] sm:px-[4rem] py-[2rem] h-full min-h-[100vh] w-full ${className}`} {...props}>
-            <h1 className="text-[2rem] mb-[2rem]">Graph Community Detection Using Louvain Algorithm</h1>
+            <h1 className="text-center text-[2rem] mb-[2rem]">Graph Community Detection Using the Louvain Algorithm</h1>
 
             <ul className="grid gap-[1rem] grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]">
                 {

@@ -11,7 +11,7 @@ public class Graph {
     private final int graphID;
 
     // maps the normalized id to the original id from the dataset
-    private Map<Integer,Integer> normalisedToOriginalId;
+    private Map<Integer, Integer> normalisedToOriginalId;
 
     private List<Edge> edges;
     private Map<String, Edge> idToEdge = new HashMap<>();// provide O(1) edge lookups
@@ -23,11 +23,11 @@ public class Graph {
     private Map<Integer, List<Edge>> adjList = new HashMap<>();
 
     // constructor
-    public Graph(){// starts empty, nodes and edges are added later one by one
+    public Graph() {// starts empty, nodes and edges are added later one by one
         graphID = idCounter++;
         this.edges = new ArrayList<>();
         this.nodes = new ArrayList<>();
-        this.adjList= toAdjList(this.edges,this.nodes);
+        this.adjList = toAdjList(this.edges, this.nodes);
         this.weight = 0;
         this.order = 0;
     }
@@ -37,25 +37,31 @@ public class Graph {
         return normalisedToOriginalId;
     }
 
-    public int getGraphID(){
+    public int getGraphID() {
         return graphID;
     }
+
     public List<Edge> getEdges() {
         return edges;
     }
+
     public List<Node> getNodes() {
         return nodes;
     }
+
     public Map<Integer, List<Edge>> getAdjList() {
         return adjList;
     }
-    public double getWeight(){
+
+    public double getWeight() {
         return this.weight;
     }
-    public int getOrder(){
+
+    public int getOrder() {
         return this.order;
     }
-    public Node getNodeByID(int nodeID){
+
+    public Node getNodeByID(int nodeID) {
         return idToNode.get(nodeID);
     }
 
@@ -67,40 +73,52 @@ public class Graph {
     public void setEdges(List<Edge> edges) {
         this.edges = edges;
     }
+
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
     }
 
-    // adds a node to the graph, filters out duplicate nodes (duplicate as in having the same id)
-    public void addNode(Node newNode){
-        if(idToNode.containsKey(newNode.getNodeId()))return;// if node already exists, don't add it
+    // adds a node to the graph,
+    // filters out duplicate nodes (duplicate as in having the same id)
+    public void addNode(Node newNode) {
+        if (idToNode.containsKey(newNode.getNodeId()))
+            return;// if node already exists, don't add it
         idToNode.put(newNode.getNodeId(), newNode);
         nodes.add(newNode);
         order++;
     }
 
-    // adds an edge to the graph, filters out duplicate edges (duplicate as in having the same id)
-    public void addEdge(Edge newEdge){
+    // adds an edge to the graph,
+    // filters out duplicate edges (duplicate as in having the same id)
+    public void addEdge(Edge newEdge) {
         String newEdgeId = newEdge.getEdgeID();
-        if(idToEdge.containsKey(newEdgeId)){
+
+        // if edge already exists, add the weights together (to account for multiple edges)
+        if (idToEdge.containsKey(newEdgeId)) {
             Edge existingEdge = idToEdge.get(newEdgeId);
             existingEdge.setEdgeWeight(existingEdge.getEdgeWeight() + newEdge.getEdgeWeight());
-        }// if edge already exists, add the weights together (to account for multiple edges)
-        else{
-            idToEdge.put(newEdge.getEdgeID(),newEdge);
+        }
+        else {
+            idToEdge.put(newEdge.getEdgeID(), newEdge);
             edges.add(newEdge);
         }
     }
 
-    // updates the adjacency list after nodes/edges are added to the graph
-    // NOTE: must be invoked manually, to avoid updating it EV times when reading a graph from a file
-    public void updateAdjList(){
-        this.adjList = toAdjList(this.edges,this.nodes);
+    /*
+     updates the adjacency list after nodes/edges are added to the graph
+     NOTE: must be invoked manually,
+           to avoid updating it EV times when reading a graph from a file
+    */
+    public void updateAdjList() {
+        this.adjList = toAdjList(this.edges, this.nodes);
     }
 
-    // updates graph weight after nodes/edges are added to the graph
-    // NOTE: must be invoked manually, to avoid updating it EV times when reading a graph from a file
-    public void updateGraphWeight(){
+    /*
+     updates graph weight after nodes/edges are added to the graph
+     NOTE: must be invoked manually,
+           to avoid updating it EV times when reading a graph from a file
+    */
+    public void updateGraphWeight() {
         this.weight = computeGraphWeight();
     }
 
@@ -127,90 +145,104 @@ public class Graph {
     }
 
     // constructs an adjacency list using a list of edges and list of nodes
-    private Map<Integer, List<Edge>> toAdjList(List<Edge> edges,List<Node> nodes){
+    private Map<Integer, List<Edge>> toAdjList(List<Edge> edges, List<Node> nodes) {
         Map<Integer, List<Edge>> adjList = new HashMap<>();
 
-        for(Node n:nodes){// for each node
+        for (Node n : nodes) {// for each node
             // create a key in adjList, which will later point to a list of incident edges
             adjList.put(n.getNodeId(), new ArrayList<>());// nodeId -> {}
         }
 
-        for(Edge e:edges){// for each edge
+        for (Edge e : edges) {// for each edge
             // add the edge to the lists of both its endpoints
             // endpoint1 -> {{1,2}, ...}
             // endpoint2 -> {{1,2}, ...}
 
-            int node1Id =  e.getEndpoints().getNode1().getNodeId();// first endpoint
+            int node1Id = e.getEndpoints().getNode1().getNodeId();
             List<Edge> edgesIncidentOnNode1 = adjList.get(node1Id);// edges incident on the first endpoint
 
             // if the edge doesn't already exist in edgesIncidentOnNode1 then add it there.
-            if(!edgesIncidentOnNode1.contains(e))edgesIncidentOnNode1.add(e);
+            if (!edgesIncidentOnNode1.contains(e))
+                edgesIncidentOnNode1.add(e);
 
-            int node2Id =  e.getEndpoints().getNode2().getNodeId();// second endpoint
+            int node2Id = e.getEndpoints().getNode2().getNodeId();
             List<Edge> edgesIncidentOnNode2 = adjList.get(node2Id);// edges incident on the second endpoint
 
             // if the edge doesn't already exist in edgesIncidentOnNode2 then add it there.
-            if(!edgesIncidentOnNode2.contains(e))edgesIncidentOnNode2.add(e);
+            if (!edgesIncidentOnNode2.contains(e))
+                edgesIncidentOnNode2.add(e);
         }
         return adjList;
     }
 
-    // expects a file name, and a delimiter then converts the file contents to a Graph object with edges and nodes
-    // NOTE: file must be structured as:
-    // endpoint1:integer endpoint2:integer weight(optional):number
-    // example: 0 2 => this line represents an edge, where the delimiter is " ", and weight defaults to 1
-    public static Graph readGraph(String filename, String delimiter){
+    /*
+     expects a file name, and a delimiter then converts the file contents to a Graph object
+     NOTE: file must be structured as:
+        endpoint1[delimiter]endpoint2[delimiter]weight(optional)
+        example: 0 2  => this line represents an edge, where the delimiter is " ", and
+     weight defaults to 1
+    */
+    public static Graph readGraph(String filename, String delimiter) {
         Scanner input = null;
 
         // loading the graph file from the resources directory
         InputStream inputStream = Graph.class.getResourceAsStream(filename);
-        if(inputStream == null){
-            throw new IllegalArgumentException("Resource not found: "+filename);
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Resource not found: " + filename);
         }
         input = new Scanner(inputStream);
 
         Graph newGraph = new Graph();// start with an empty graph, then add nodes and edges one by one
 
-        Map<Integer,Integer> idToIndex = new HashMap<>();
+        Map<Integer, Integer> idToIndex = new HashMap<>();
         int normalisedId = 0;
-        while(input.hasNextLine()){// read the file line by line
+        while (input.hasNextLine()) {// read the file line by line
             String line = input.nextLine();// each line represents an edge
             String[] edgeComponents = line.split(delimiter);// split the line based on the delimiter
 
             int node1Id = Integer.parseInt(edgeComponents[0]);
-            if(!idToIndex.containsKey(node1Id))
+            if (!idToIndex.containsKey(node1Id))
                 idToIndex.put(Integer.parseInt(edgeComponents[0]), normalisedId++);
 
             int node2Id = Integer.parseInt(edgeComponents[1]);
-            if(!idToIndex.containsKey(node2Id))
+            if (!idToIndex.containsKey(node2Id))
                 idToIndex.put(Integer.parseInt(edgeComponents[1]), normalisedId++);
 
-            // construct nodes/edge object
+            // construct nodes and edge object
             Node node1 = new Node(idToIndex.get(node1Id));
             Node node2 = new Node(idToIndex.get(node2Id));
             float weight = 1f; // if the dataset doesn't provide edge weights, then the weight is 1 by default
-            if(edgeComponents.length==3) weight = Float.parseFloat(edgeComponents[2]);// if weight is provided then use it
+            if (edgeComponents.length == 3)
+                weight = Float.parseFloat(edgeComponents[2]);// if weight is provided then use it
 
-            Edge edge = new Edge(node1,node2,weight);
+            Edge edge = new Edge(node1, node2, weight);
 
             // add nodes and edge to the graph
             newGraph.addNode(node1);
             newGraph.addNode(node2);
             newGraph.addEdge(edge);
         }
+        input.close();
 
-        newGraph.updateAdjList();// adjList is created when the Graph object is created, then updated manually when we're done inserting nodes and edges
-        newGraph.updateGraphWeight();// graph weight starts as 0, then updated manually when we're done inserting nodes and edges
-        newGraph.setNormalisedToOriginalId(reverseMap(idToIndex));// keep track of the original ids to use them in the dendrogram's first level mapping
+        // adjList is created when the Graph object is created
+        // then updated manually when we're done inserting nodes and edges
+        newGraph.updateAdjList();
+
+        // graph weight starts as 0
+        // then updated manually when we're done inserting nodes and edges
+        newGraph.updateGraphWeight();
+
+        // keep track of the original ids to use them in the dendrogram's first level mapping
+        newGraph.setNormalisedToOriginalId(reverseMap(idToIndex));
 
         System.out.println("Graph read succesfully.");
         return newGraph;
     }
 
-    private static Map<Integer,Integer> reverseMap(Map<Integer,Integer> idToIndex){
-        Map<Integer,Integer> indexToId = new HashMap<>();
-        for(int i:idToIndex.keySet()){
-            indexToId.put(idToIndex.get(i),i);
+    private static Map<Integer, Integer> reverseMap(Map<Integer, Integer> idToIndex) {
+        Map<Integer, Integer> indexToId = new HashMap<>();
+        for (int i : idToIndex.keySet()) {
+            indexToId.put(idToIndex.get(i), i);
         }
         return indexToId;
     }
