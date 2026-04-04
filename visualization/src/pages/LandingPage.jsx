@@ -1,5 +1,6 @@
 import GraphCard from "../components/GraphCard";
-
+import githubLogo from "../assets/logos/github.png";
+import ummAlquraLogo from "../assets/logos/uqulogo.png";
 export default function LandingPage({ className = "", children, ...props }) {
     const graphs = [
         {
@@ -80,6 +81,14 @@ export default function LandingPage({ className = "", children, ...props }) {
                     )
                 }
             </ul>
+            <footer className=" mt-[4rem] flex justify-between items-center">
+                <a href="https://uqu.edu.sa/en">
+                    <img src={ummAlquraLogo} className="max-w-[6.2rem] max-h-[6.2rem] " />
+                </a>
+                <a href="https://github.com/WDataW/Louvain">
+                    <img src={githubLogo} className="max-w-[5rem] max-h-[5rem] " />
+                </a>
+            </footer>
         </div>
     );
 }
