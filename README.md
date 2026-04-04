@@ -291,9 +291,9 @@ visualization/public/<graphdirname>  Precomputed graph JSON files (served to cli
 
 ## References
 
-[1] V. D. Blondel, J.-L. Guillaume, R. Lambiotte, and E. Lefebvre, “Fast unfolding of communities in large networks,” Journal of Statistical Mechanics: Theory and Experiment, vol. 2008, no. 10, p. P10008, Oct. 2008.
+V. D. Blondel, J.-L. Guillaume, R. Lambiotte, and E. Lefebvre, “Fast unfolding of communities in large networks,” Journal of Statistical Mechanics: Theory and Experiment, vol. 2008, no. 10, p. P10008, Oct. 2008.
 
-[2] D. Plein, "Discovering Communities: Modularity & Louvain #SoMe3," YouTube, Mar. 2023. [Online]. Available: https://www.youtube.com/watch?v=Xt0vBtBY2BU. [Accessed: Mar. 25, 2026].
+D. Plein, "Discovering Communities: Modularity & Louvain #SoMe3," YouTube, Mar. 2023. [Online]. Available: https://www.youtube.com/watch?v=Xt0vBtBY2BU. [Accessed: Mar. 25, 2026].
 
 ---
 
